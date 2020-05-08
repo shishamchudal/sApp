@@ -2,5 +2,5 @@
 $DATABASE_HOST = "localhost";
 $DATABASE_USER = "root";
 $DATABASE_PASS = "root";
-$DATABASE_NAME = "teamfirs_mms";
+$DATABASE_NAME = "sApp";
 
