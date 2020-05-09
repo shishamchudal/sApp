@@ -26,50 +26,62 @@ $all_result = $statement->fetchAll();
 
 $total_rows = $statement->rowCount();
 
+if (isset($_POST['filter'])) {
+    $statement = $connect->prepare("
+    SELECT
+    Purchase_Ledger.id,
+    Purchase_Ledger.Date,
+    Purchase_Ledger.Bill_no,
+    Purchase_Ledger.Sellers_name,
+    Purchase_Ledger.Sellers_PAN_no,
+    Purchase_Ledger.Total_Purchase_Amount,
+    Purchase_Ledger.VAT_included_purchase_amount,
+    Purchase_Ledger.VAT_included_purchase_VAT_amount,
+    Branch.Name
+    FROM
+    Purchase_Ledger
+    JOIN Branch ON purchase_Ledger.Branch = Branch.id
+    WHERE Date Between :startDate AND :endDate order by Date;
+    ");
+
+    $statement->execute(
+        array(
+            ':startDate' => trim($_POST["startDate"]),
+            ':endDate' => trim($_POST["endDate"])
+        )
+    );
+    $all_result = $statement->fetchAll();
+
+    $total_rows = $statement->rowCount();
+}
+
 $name = $_SESSION['name'];
 if (isset($_POST["Add"])) {
     try {
         echo
             "<hr> Date: " . trim($_POST["Date"]) .
-                "<br> Bill_no: " . trim($_POST["Bill_no"]) .
-                "<br> Customers_name: " . trim($_POST["Customers_name"]) .
-                "<br> Customers_PAN_no: " . trim($_POST["Customers_PAN_no"]) .
-                "<br> Total_purchase_amount: " . trim($_POST["Total_purchase_amount"]) .
+                "<br> Bill_No: " . trim($_POST["Bill_No"]) .
+                "<br> Sellers_name: " . trim($_POST["Sellers_name"]) .
+                "<br> Sellers_PAN_no: " . trim($_POST["Sellers_PAN_no"]) .
+                "<br> Total_Purchase_Amount: " . trim($_POST["Total_Purchase_Amount"]) .
                 "<br> VAT_included_purchase_amount: " . trim($_POST["VAT_included_purchase_amount"]) .
-                "<br> VAT_included_purchase_VAT: " . trim($_POST["VAT_included_purchase_VAT"]) .
+                "<br> VAT_included_purchase_VAT_amount: " . trim($_POST["VAT_included_purchase_VAT_amount"]) .
                 "<br> Branch: " . trim($_POST["Branch"]) .
                 "<hr>";
         $statement = $connect->prepare("
-        INSERT INTO `purchase_Ledger`(
-            `Date`,
-            `Bill_no`,
-            `Customers_name`,
-            `Customers_PAN_no`,
-            `Total_purchase_amount`,
-            `VAT_included_purchase_amount`,
-            `VAT_included_purchase_VAT`,
-            `Branch`
-        )
-        VALUES(
-            :Date,
-            :Bill_no,
-            :Customers_name,
-            :Customers_PAN_no,
-            :Total_purchase_amount,
-            :VAT_included_purchase_amount,
-            :VAT_included_purchase_VAT,
-            :Branch
-        );
+            INSERT INTO `Purchase_Ledger`
+            (`Date`,`Bill_No`,`Sellers_name`,`Sellers_PAN_no`,`Total_Purchase_Amount`,`VAT_included_purchase_amount`,`VAT_included_purchase_VAT_amount`, `Branch`)
+            VALUES(:Date,:Bill_No,:Sellers_name,:Sellers_PAN_no,:Total_Purchase_Amount,:VAT_included_purchase_amount,:VAT_included_purchase_VAT_amount,:Branch);
         ");
         $statement->execute(
             array(
                 ':Date'               =>  trim($_POST["Date"]),
-                ':Bill_no'             =>  trim($_POST["Bill_no"]),
-                ':Customers_name'             =>  trim($_POST["Customers_name"]),
-                ':Customers_PAN_no'             =>  trim($_POST["Customers_PAN_no"]),
-                ':Total_purchase_amount'             =>  trim($_POST["Total_purchase_amount"]),
+                ':Bill_No'             =>  trim($_POST["Bill_No"]),
+                ':Sellers_name'             =>  trim($_POST["Sellers_name"]),
+                ':Sellers_PAN_no'             =>  trim($_POST["Sellers_PAN_no"]),
+                ':Total_Purchase_Amount'             =>  trim($_POST["Total_Purchase_Amount"]),
                 ':VAT_included_purchase_amount'             =>  trim($_POST["VAT_included_purchase_amount"]),
-                ':VAT_included_purchase_VAT'             =>  trim($_POST["VAT_included_purchase_VAT"]),
+                ':VAT_included_purchase_VAT_amount'             =>  trim($_POST["VAT_included_purchase_VAT_amount"]),
                 ':Branch'             =>  trim($_POST["Branch"])
             )
         );
@@ -83,26 +95,26 @@ if (isset($_GET["update"])) {
     if (isset($_POST["Update"])) {
         $id = $_GET["id"];
         $statement = $connect->prepare("
-            UPDATE `purchase_Ledger` 
+            UPDATE `Purchase_Ledger` 
             SET `Date` = :Date,
-            `Bill_No` = :Bill_no,
-            `Sellers_name` = :Customers_name,
-            `Sellers_PAN_no` = :Customers_PAN_no,
-            `Total_Purchase_Amount` = :Total_purchase_amount,
+            `Bill_No` = :Bill_No,
+            `Sellers_name` = :Sellers_name,
+            `Sellers_PAN_no` = :Sellers_PAN_no,
+            `Total_Purchase_Amount` = :Total_Purchase_Amount,
             `VAT_included_purchase_amount` = :VAT_included_purchase_amount,
-            `VAT_included_purchase_VAT_amount` = :VAT_included_purchase_VAT
+            `VAT_included_purchase_VAT_amount` = :VAT_included_purchase_VAT_amount
             WHERE id = :id;
             ");
         $statement->execute(
             array(
                 ':id'                   => $id,
                 ':Date'               =>  trim($_POST["Date"]),
-                ':Bill_no'             =>  trim($_POST["Bill_no"]),
-                ':Customers_name'             =>  trim($_POST["Customers_name"]),
-                ':Customers_PAN_no'             =>  trim($_POST["Customers_PAN_no"]),
-                ':Total_purchase_amount'             =>  trim($_POST["Total_purchase_amount"]),
+                ':Bill_No'             =>  trim($_POST["Bill_No"]),
+                ':Sellers_name'             =>  trim($_POST["Sellers_name"]),
+                ':Sellers_PAN_no'             =>  trim($_POST["Sellers_PAN_no"]),
+                ':Total_Purchase_Amount'             =>  trim($_POST["Total_Purchase_Amount"]),
                 ':VAT_included_purchase_amount'             =>  trim($_POST["VAT_included_purchase_amount"]),
-                ':VAT_included_purchase_VAT'             =>  trim($_POST["VAT_included_purchase_VAT"])
+                ':VAT_included_purchase_VAT_amount'             =>  trim($_POST["VAT_included_purchase_VAT_amount"])
             )
         );
         echo "Values updated sucessfully!";
@@ -111,14 +123,14 @@ if (isset($_GET["update"])) {
 }
 if (isset($_GET["delete"]) && isset($_GET["id"])) {
     $statement = $connect->prepare(
-        "DELETE FROM purchase_Ledger WHERE id = :id"
+        "DELETE FROM Purchase_Ledger WHERE id = :id"
     );
     $statement->execute(
         array(
             ':id'       =>      $_GET["id"]
         )
     );
-    header("location:purchase.php");
+    header("location:Purchase.php");
 }
 
 ?>
@@ -126,7 +138,7 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
 <html lang="en">
 
 <head>
-    <title>purchase's List</title>
+    <title>Purchase's List</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -217,7 +229,7 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                         <label for="name">Date</label>
                                     </th>
                                     <td>
-                                        <input type="date" name="Date" id="date" required class="form-control">
+                                        <input type="date" name="Date" id="Adddate" required class="form-control date">
                                     </td>
                                 </tr>
                                 <tr>
@@ -225,23 +237,23 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                         <label for="panno">Bill No</label>
                                     </th>
                                     <td>
-                                        <input type="number" name="Bill_no" id="billno" class="form-control" required>
+                                        <input type="number" name="Bill_No" id="billno" class="form-control" required>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>
-                                        <label for="phone">Customer's Name</label>
+                                        <label for="phone">Seller's Name</label>
                                     </th>
                                     <td>
-                                        <input type="text" name="Customers_name" id="Customersname" required class="form-control">
+                                        <input type="text" name="Sellers_name" id="Customersname" required class="form-control">
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>
-                                        <label for="phone">Customer's PAN No</label>
+                                        <label for="phone">Seller's PAN No</label>
                                     </th>
                                     <td>
-                                        <input type="number" name="Customers_PAN_no" id="Customerspanno" required class="form-control">
+                                        <input type="number" name="Sellers_PAN_no" id="Customerspanno" required class="form-control">
                                     </td>
                                 </tr>
                                 <tr>
@@ -249,12 +261,12 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                         <label for="phone">Total purchase Amount</label>
                                     </th>
                                     <td>
-                                        <input type="number" name="Total_purchase_amount" id="totalpurchaseamount" required class="form-control" readonly>
+                                        <input type="number" name="Total_Purchase_Amount" id="totalpurchaseamount" required class="form-control" readonly>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>
-                                        <label for="phone">purchase Amount</label>
+                                        <label for="phone">Purchase Amount</label>
                                     </th>
                                     <td>
                                         <input type="number" name="VAT_included_purchase_amount" id="purchase_amount" required class="form-control purchase_amount">
@@ -265,7 +277,7 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                         <label for="phone">VAT Amount</label>
                                     </th>
                                     <td>
-                                        <input type="number" name="VAT_included_purchase_VAT" id="vat_amount" required class="form-control vat_amount" readonly>
+                                        <input type="number" name="VAT_included_purchase_VAT_amount" id="vat_amount" required class="form-control vat_amount" readonly>
                                     </td>
                                 </tr>
                                 <tr>
@@ -289,6 +301,10 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                         </form>
                         <script>
                             $(document).ready(function() {
+                                $('#Adddate').datepicker({
+                                    format: "yyyy-mm-dd",
+                                    autoclose: true
+                                });
 
                                 function calc_vat_amt() {
                                     var purchase_amount = $("#purchase_amount").val();
@@ -358,7 +374,7 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                             <label for="name">Date</label>
                                         </th>
                                         <td>
-                                            <input type="date" name="Date" id="date" required class="form-control" value="<?php echo $row["Date"]; ?>">
+                                            <input type="date" name="Date" id="date" required class="form-control date" value="<?php echo $row["Date"]; ?>">
                                         </td>
                                     </tr>
                                     <tr>
@@ -366,23 +382,23 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                             <label for="panno">Bill No</label>
                                         </th>
                                         <td>
-                                            <input type="number" name="Bill_no" id="billno" class="form-control" value="<?php echo $row["Bill_No"]; ?>" required>
+                                            <input type="number" name="Bill_No" id="billno" class="form-control" value="<?php echo $row["Bill_No"]; ?>" required>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>
-                                            <label for="phone">Customer's Name</label>
+                                            <label for="phone">Seller's Name</label>
                                         </th>
                                         <td>
-                                            <input type="text" name="Customers_name" id="Customersname" value="<?php echo $row["Sellers_name"]; ?>" required class="form-control">
+                                            <input type="text" name="Sellers_name" id="Customersname" value="<?php echo $row["Sellers_name"]; ?>" required class="form-control">
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>
-                                            <label for="phone">Customer's PAN No</label>
+                                            <label for="phone">Seller's PAN No</label>
                                         </th>
                                         <td>
-                                            <input type="number" name="Customers_PAN_no" id="Customerspanno" value="<?php echo $row["Sellers_PAN_no"]; ?>" required class="form-control">
+                                            <input type="number" name="Sellers_PAN_no" id="Customerspanno" value="<?php echo $row["Sellers_PAN_no"]; ?>" required class="form-control">
                                         </td>
                                     </tr>
                                     <tr>
@@ -390,12 +406,12 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                             <label for="phone">Total purchase Amount</label>
                                         </th>
                                         <td>
-                                            <input type="number" name="Total_purchase_amount" id="totalpurchaseamount" value="<?php echo $row["Total_Purchase_Amount"]; ?>" required class="form-control" readonly>
+                                            <input type="number" name="Total_Purchase_Amount" id="totalpurchaseamount" value="<?php echo $row["Total_Purchase_Amount"]; ?>" required class="form-control" readonly>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>
-                                            <label for="phone">purchase Amount</label>
+                                            <label for="phone">Purchase Amount</label>
                                         </th>
                                         <td>
                                             <input type="number" name="VAT_included_purchase_amount" id="purchase_amount" value="<?php echo $row["VAT_included_purchase_amount"]; ?>" required class="form-control purchase_amount">
@@ -406,7 +422,7 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                             <label for="phone">VAT Amount</label>
                                         </th>
                                         <td>
-                                            <input type="number" name="VAT_included_purchase_VAT" id="vat_amount" value="<?php echo $row["VAT_included_purchase_VAT_amount"]; ?>" required class="form-control vat_amount" readonly>
+                                            <input type="number" name="VAT_included_purchase_VAT_amount" id="vat_amount" value="<?php echo $row["VAT_included_purchase_VAT_amount"]; ?>" required class="form-control vat_amount" readonly>
                                         </td>
                                     </tr>
 
@@ -418,6 +434,10 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                             </form>
                             <script>
                                 $(document).ready(function() {
+                                    $('#date').datepicker({
+                                        format: "yyyy-mm-dd",
+                                        autoclose: true
+                                    });
 
                                     function calc_vat_amt() {
                                         var purchase_amount = $("#purchase_amount").val();
@@ -465,6 +485,36 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                             <h2 class="pull-left">Purchase's List</h2>
                             <a href="purchase.php?add=1" class="btn btn-success pull-right">Add New Record</a><br><br>
                         </div>
+                        <form method="post" id="filter_form">
+                            <table>
+                                <tr>
+                                    <td>
+                                        Start Date:
+                                    </td>
+                                    <td>
+                                        <input type="date" name="startDate" id="StartDate" class="form-control" required>
+                                    </td>
+                                    <td>
+                                        End Date:
+                                    </td>
+                                    <td>
+                                        <input type="date" name="endDate" id="EndDate" class="form-control" required>
+                                    </td>
+                                    <td>
+                                        <input type="submit" name="filter" id="filter" value="Filter" class="btn btn-primary filter">
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                        <br>
+                        <script>
+                            $(document).ready(function() {
+                                $('#filter').click(function() {
+                                    $('#filter_form').submit();
+                                });
+
+                            });
+                        </script>
                         <div id="Ratelist" class="table-responsive">
                             <table id="data-table" class='table table-bordered table-striped'>
                                 <thead>
@@ -472,8 +522,8 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                         <td>#</td>
                                         <td>Date</td>
                                         <td>Bill no</td>
-                                        <td>Customers name</td>
-                                        <td>Customers PAN no</td>
+                                        <td>Seller's name</td>
+                                        <td>Seller's PAN no</td>
                                         <td>Total purchase amount</td>
                                         <td>VAT included purchase amount</td>
                                         <td>VAT amount</td>
@@ -527,7 +577,11 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
     $(document).ready(function() {
         $('#Name').chosen();
         $('#data-table').DataTable();
-        $('#date').datepicker({
+        $('#StartDate').datepicker({
+            format: "yyyy-mm-dd",
+            autoclose: true
+        });
+        $('#EndDate').datepicker({
             format: "yyyy-mm-dd",
             autoclose: true
         });

@@ -26,6 +26,35 @@ $all_result = $statement->fetchAll();
 
 $total_rows = $statement->rowCount();
 
+if (isset($_POST['filter'])) {
+    $statement = $connect->prepare("
+    SELECT
+    Sales_Ledger.id,
+    Sales_Ledger.Date,
+    Sales_Ledger.Bill_no,
+    Sales_Ledger.Customers_name,
+    Sales_Ledger.Customers_PAN_no,
+    Sales_Ledger.Total_sales_amount,
+    Sales_Ledger.VAT_included_sales_amount,
+    Sales_Ledger.VAT_included_sales_VAT,
+    Branch.Name
+    FROM
+    Sales_Ledger
+    JOIN Branch ON Sales_Ledger.Branch = Branch.id
+    WHERE Date Between :startDate AND :endDate order by Date;
+    ");
+
+    $statement->execute(
+        array(
+            ':startDate' => trim($_POST["startDate"]),
+            ':endDate' => trim($_POST["endDate"])
+        )
+    );
+    $all_result = $statement->fetchAll();
+
+    $total_rows = $statement->rowCount();
+}
+
 $name = $_SESSION['name'];
 if (isset($_POST["Add"])) {
     try {
@@ -289,6 +318,10 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                         </form>
                         <script>
                             $(document).ready(function() {
+                                    $('#date').datepicker({
+                                        format: "yyyy-mm-dd",
+                                        autoclose: true
+                                    });
 
                                 function calc_vat_amt() {
                                     var sales_amount = $("#sales_amount").val();
@@ -418,6 +451,10 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                             </form>
                             <script>
                                 $(document).ready(function() {
+                                    $('#date').datepicker({
+                                        format: "yyyy-mm-dd",
+                                        autoclose: true
+                                    });
 
                                     function calc_vat_amt() {
                                         var sales_amount = $("#sales_amount").val();
@@ -465,6 +502,36 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                             <h2 class="pull-left">Sales's List</h2>
                             <a href="sales.php?add=1" class="btn btn-success pull-right">Add New Record</a><br><br>
                         </div>
+                        <form method="post" id="filter_form">
+                            <table>
+                                <tr>
+                                    <td>
+                                        Start Date:
+                                    </td>
+                                    <td>
+                                        <input type="date" name="startDate" id="StartDate" class="form-control" required>
+                                    </td>
+                                    <td>
+                                        End Date:
+                                    </td>
+                                    <td>
+                                        <input type="date" name="endDate" id="EndDate" class="form-control" required>
+                                    </td>
+                                    <td>
+                                        <input type="submit" name="filter" id="filter" value="Filter" class="btn btn-primary filter">
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                        <br>
+                        <script>
+                            $(document).ready(function() {
+                                $('#filter').click(function() {
+                                    $('#filter_form').submit();
+                                });
+
+                            });
+                        </script>
                         <div id="Ratelist" class="table-responsive">
                             <table id="data-table" class='table table-bordered table-striped'>
                                 <thead>
@@ -527,7 +594,11 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
     $(document).ready(function() {
         $('#Name').chosen();
         $('#data-table').DataTable();
-        $('#date').datepicker({
+        $('#StartDate').datepicker({
+            format: "yyyy-mm-dd",
+            autoclose: true
+        });
+        $('#EndDate').datepicker({
             format: "yyyy-mm-dd",
             autoclose: true
         });
