@@ -3,80 +3,56 @@ include 'includes/header.php';
 include('functions.php');
 include('database_connection.php');
 
-function Sales_List($connect)
-{
+$statement = $connect->prepare("
+SELECT
+Sales_Ledger.id,
+Sales_Ledger.Date,
+Sales_Ledger.Bill_no,
+Sales_Ledger.Customers_name,
+Sales_Ledger.Customers_PAN_no,
+Sales_Ledger.Total_sales_amount,
+Sales_Ledger.VAT_included_sales_amount,
+Sales_Ledger.VAT_included_sales_VAT,
+Branch.Name
+FROM
+Sales_Ledger
+JOIN Branch ON Sales_Ledger.Branch = Branch.id
+    order by Date
+");
+
+$statement->execute();
+
+$all_result = $statement->fetchAll();
+
+$total_rows = $statement->rowCount();
+
+if (isset($_POST['filter'])) {
     $statement = $connect->prepare("
-        SELECT
-        Sales_Ledger.id,
-        Sales_Ledger.Date,
-        Sales_Ledger.Bill_no,
-        Sales_Ledger.Customers_name,
-        Sales_Ledger.Customers_PAN_no,
-        Sales_Ledger.Total_sales_amount,
-        Sales_Ledger.VAT_included_sales_amount,
-        Sales_Ledger.VAT_included_sales_VAT,
-        Branch.Name
-        FROM
-        Sales_Ledger
-        JOIN Branch ON Sales_Ledger.Branch = Branch.id
-            order by Date
-        ");
+    SELECT
+    Sales_Ledger.id,
+    Sales_Ledger.Date,
+    Sales_Ledger.Bill_no,
+    Sales_Ledger.Customers_name,
+    Sales_Ledger.Customers_PAN_no,
+    Sales_Ledger.Total_sales_amount,
+    Sales_Ledger.VAT_included_sales_amount,
+    Sales_Ledger.VAT_included_sales_VAT,
+    Branch.Name
+    FROM
+    Sales_Ledger
+    JOIN Branch ON Sales_Ledger.Branch = Branch.id
+    WHERE Date Between :startDate AND :endDate order by Date;
+    ");
 
-    $statement->execute();
-
+    $statement->execute(
+        array(
+            ':startDate' => trim($_POST["startDate"]),
+            ':endDate' => trim($_POST["endDate"])
+        )
+    );
     $all_result = $statement->fetchAll();
 
     $total_rows = $statement->rowCount();
-
-    if (isset($_POST['filter'])) {
-        $statement = $connect->prepare("
-            SELECT
-            Sales_Ledger.id,
-            Sales_Ledger.Date,
-            Sales_Ledger.Bill_no,
-            Sales_Ledger.Customers_name,
-            Sales_Ledger.Customers_PAN_no,
-            Sales_Ledger.Total_sales_amount,
-            Sales_Ledger.VAT_included_sales_amount,
-            Sales_Ledger.VAT_included_sales_VAT,
-            Branch.Name
-            FROM
-            Sales_Ledger
-            JOIN Branch ON Sales_Ledger.Branch = Branch.id
-            WHERE Date Between :startDate AND :endDate order by Date;
-        ");
-
-        $statement->execute(
-            array(
-                ':startDate' => trim($_POST["startDate"]),
-                ':endDate' => trim($_POST["endDate"])
-            )
-        );
-        $all_result = $statement->fetchAll();
-
-        $total_rows = $statement->rowCount();
-    }
-    if ($total_rows > 0) {
-        $sum = 0;
-        foreach ($all_result as $row) {
-            $sum = $sum + $row["Total_sales_amount"];
-            echo '
-                    <tr>
-                        <td>' . $row["id"] . '</td>
-                        <td>' . $row['Date'] . '</td>
-                        <td>' . $row['Bill_no'] . '</td>
-                        <td>' . $row['Customers_name'] . '</td>
-                        <td>' . $row['Customers_PAN_no'] . '</td>
-                        <td>' . $row['Total_sales_amount'] . '</td>
-                        <td>' . $row['VAT_included_sales_amount'] . '</td>
-                        <td>' . $row['VAT_included_sales_VAT'] . '</td>
-                        <td>' . $row['Name'] . '</td>
-                        <td><a href="sales.php?update=1&id=' . $row["id"] . '">Edit</a></td>
-                        <td><a href="sales.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
-                    </tr>
-                ';
-        }
-    }
 }
 
 $name = $_SESSION['name'];
@@ -342,10 +318,10 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                         </form>
                         <script>
                             $(document).ready(function() {
-                                $('#date').datepicker({
-                                    format: "yyyy-mm-dd",
-                                    autoclose: true
-                                });
+                                    $('#date').datepicker({
+                                        format: "yyyy-mm-dd",
+                                        autoclose: true
+                                    });
 
                                 function calc_vat_amt() {
                                     var sales_amount = $("#sales_amount").val();
@@ -575,7 +551,27 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                 </thead>
                                 <tbody>
                                     <?php
-                                    Sales_List($connect);
+                                    if ($total_rows > 0) {
+                                        $sum = 0;
+                                        foreach ($all_result as $row) {
+                                            $sum = $sum + $row["Total_sales_amount"];
+                                            echo '
+                                            <tr>
+                                                <td>' . $row["id"] . '</td>
+                                                <td>' . $row['Date'] . '</td>
+                                                <td>' . $row['Bill_no'] . '</td>
+                                                <td>' . $row['Customers_name'] . '</td>
+                                                <td>' . $row['Customers_PAN_no'] . '</td>
+                                                <td>' . $row['Total_sales_amount'] . '</td>
+                                                <td>' . $row['VAT_included_sales_amount'] . '</td>
+                                                <td>' . $row['VAT_included_sales_VAT'] . '</td>
+                                                <td>' . $row['Name'] . '</td>
+                                                <td><a href="sales.php?update=1&id=' . $row["id"] . '">Edit</a></td>
+                                                <td><a href="sales.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
+                                            </tr>
+                                            ';
+                                        }
+                                    }
                                     ?>
                                 </tbody>
                                 <tr>
