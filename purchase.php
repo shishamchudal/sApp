@@ -3,7 +3,9 @@ include 'includes/header.php';
 include('functions.php');
 include('database_connection.php');
 
-$statement = $connect->prepare("
+function Purchase_List($connect)
+{
+    $statement = $connect->prepare("
 SELECT
 Purchase_Ledger.id,
 Purchase_Ledger.Date,
@@ -20,14 +22,14 @@ JOIN Branch ON purchase_Ledger.Branch = Branch.id
     order by Date
 ");
 
-$statement->execute();
+    $statement->execute();
 
-$all_result = $statement->fetchAll();
+    $all_result = $statement->fetchAll();
 
-$total_rows = $statement->rowCount();
+    $total_rows = $statement->rowCount();
 
-if (isset($_POST['filter'])) {
-    $statement = $connect->prepare("
+    if (isset($_POST['filter'])) {
+        $statement = $connect->prepare("
     SELECT
     Purchase_Ledger.id,
     Purchase_Ledger.Date,
@@ -44,17 +46,38 @@ if (isset($_POST['filter'])) {
     WHERE Date Between :startDate AND :endDate order by Date;
     ");
 
-    $statement->execute(
-        array(
-            ':startDate' => trim($_POST["startDate"]),
-            ':endDate' => trim($_POST["endDate"])
-        )
-    );
-    $all_result = $statement->fetchAll();
+        $statement->execute(
+            array(
+                ':startDate' => trim($_POST["startDate"]),
+                ':endDate' => trim($_POST["endDate"])
+            )
+        );
+        $all_result = $statement->fetchAll();
 
-    $total_rows = $statement->rowCount();
+        $total_rows = $statement->rowCount();
+    }
+    if ($total_rows > 0) {
+        $sum = 0;
+        foreach ($all_result as $row) {
+            $sum = $sum + $row["Total_Purchase_Amount"];
+            echo '
+            <tr>
+                <td>' . $row["id"] . '</td>
+                <td>' . $row['Date'] . '</td>
+                <td>' . $row['Bill_no'] . '</td>
+                <td>' . $row['Sellers_name'] . '</td>
+                <td>' . $row['Sellers_PAN_no'] . '</td>
+                <td>' . $row['Total_Purchase_Amount'] . '</td>
+                <td>' . $row['VAT_included_purchase_amount'] . '</td>
+                <td>' . $row['VAT_included_purchase_VAT_amount'] . '</td>
+                <td>' . $row['Name'] . '</td>
+                <td><a href="purchase.php?update=1&id=' . $row["id"] . '">Edit</a></td>
+                <td><a href="purchase.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
+            </tr>
+            ';
+        }
+    }
 }
-
 $name = $_SESSION['name'];
 if (isset($_POST["Add"])) {
     try {
@@ -534,27 +557,7 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                 </thead>
                                 <tbody>
                                     <?php
-                                    if ($total_rows > 0) {
-                                        $sum = 0;
-                                        foreach ($all_result as $row) {
-                                            $sum = $sum + $row["Total_Purchase_Amount"];
-                                            echo '
-                                            <tr>
-                                                <td>' . $row["id"] . '</td>
-                                                <td>' . $row['Date'] . '</td>
-                                                <td>' . $row['Bill_no'] . '</td>
-                                                <td>' . $row['Sellers_name'] . '</td>
-                                                <td>' . $row['Sellers_PAN_no'] . '</td>
-                                                <td>' . $row['Total_Purchase_Amount'] . '</td>
-                                                <td>' . $row['VAT_included_purchase_amount'] . '</td>
-                                                <td>' . $row['VAT_included_purchase_VAT_amount'] . '</td>
-                                                <td>' . $row['Name'] . '</td>
-                                                <td><a href="purchase.php?update=1&id=' . $row["id"] . '">Edit</a></td>
-                                                <td><a href="purchase.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
-                                            </tr>
-                                            ';
-                                        }
-                                    }
+                                    Purchase_List($connect);
                                     ?>
                                 </tbody>
                                 <tr>
