@@ -10,6 +10,7 @@ Branch.id,
 Branch.Name,
 Branch.Address,
 Branch.Phone,
+Branch.PAN,
 Branch.Branch_type,
 accounts.username
 FROM
@@ -41,6 +42,7 @@ JOIN accounts ON Branch.Linked_account = accounts.id
             `Name`,
             `Address`,
             `Phone`,
+            `PAN`,
             `Branch_type`,
             `Linked_account`
         )
@@ -48,6 +50,7 @@ JOIN accounts ON Branch.Linked_account = accounts.id
             :Name,
             :Address,
             :Phone,
+            :PAN,
             :Branch_type,
             :Linked_account
         );
@@ -57,6 +60,7 @@ JOIN accounts ON Branch.Linked_account = accounts.id
                     ':Name'               =>  trim($_POST["Name"]),
                     ':Address'             =>  trim($_POST["Address"]),
                     ':Phone'             =>  trim($_POST["Phone"]),
+                    ':PAN'             =>  trim($_POST["PAN"]),
                     ':Branch_type'             =>  trim($_POST["Branch_type"]),
                     ':Linked_account'             =>  trim($_POST["Linked_account"])
                 )
@@ -247,6 +251,14 @@ WHERE
                                 </tr>
                                 <tr>
                                     <th>
+                                        <label for="panno">PAN No</label>
+                                    </th>
+                                    <td>
+                                        <input type="number" name="PAN" id="PAN" class="form-control PAN">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
                                         <label for="phone">Branch Type</label>
                                     </th>
                                     <td>
@@ -380,6 +392,7 @@ WHERE
                                         <td>Name</td>
                                         <td>Address</td>
                                         <td>Phone</td>
+                                        <td>PAN no</td>
                                         <td>Branch Type</td>
                                         <td>Linked Account</td>
                                         <td>Edit</td>
@@ -398,6 +411,7 @@ WHERE
                                                 <td>' . $row['Name'] . '</td>
                                                 <td>' . $row['Address'] . '</td>
                                                 <td>' . $row['Phone'] . '</td>
+                                                <td>' . $row['PAN'] . '</td>
                                                 <td>' . $row['Branch_type'] . '</td>
                                                 <td>' . $row['username'] . '</td>
                                                 <td><a href="Branch.php?update=1&id=' . $row["id"] . '">Edit</a></td>

@@ -31,10 +31,6 @@
               </div>
             </li>
 
-            <?php include("notifications.php"); ?>
-
-            <?php include("messages.php"); ?>
-
             <div class="topbar-divider d-none d-sm-block"></div>
 
             <?php include("userinfo.php"); ?>

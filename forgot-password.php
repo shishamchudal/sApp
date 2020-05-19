@@ -23,6 +23,12 @@
 <body class="bg-gradient-primary">
 
   <div class="container">
+    <br>
+    <br>
+    <br>
+    <center>
+      <h1 class="h4 text-gray-900 mb-4" style="color: white;">Online Outlet Management System</h1>
+    </center>
 
     <!-- Outer Row -->
     <div class="row justify-content-center">

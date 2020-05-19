@@ -320,10 +320,10 @@ if ($_SESSION["User_type"] == "Admin") {
                 header("location:sales.php");
             } else {
 ?>
-                    <script>
-                        alert("You are not allowed to delete it😡!");
-                        window.top.location='sales.php';
-                    </script>
+                <script>
+                    alert("You are not allowed to delete it😡!");
+                    window.top.location = 'sales.php';
+                </script>
 <?php
             }
         }
@@ -334,7 +334,7 @@ if ($_SESSION["User_type"] == "Admin") {
 <html lang="en">
 
 <head>
-    <title>Sales's List</title>
+    <title>Sales's Register (बिक्री खाता)</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -415,7 +415,7 @@ if ($_SESSION["User_type"] == "Admin") {
                     ?>
 
                         <div class="page-header">
-                            <h2>Add Records</h2>
+                            <h2>Add Sales's Record (बिक्री खाता)</h2>
                         </div>
                         <p>Please fill this form and submit to add Sales record to the database.!</p>
                         <form id="Cheque_form" method="post">
@@ -430,7 +430,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                 </tr>
                                 <tr>
                                     <th>
-                                        <label for="panno">Bill No</label>
+                                        <label for="panno">Invoice No</label>
                                     </th>
                                     <td>
                                         <input type="number" name="Bill_no" id="billno" class="form-control" required>
@@ -518,7 +518,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                         return false;
                                     }
                                     if ($.trim($('#billno').val()).length == 0) {
-                                        alert("Please Enter Bill no");
+                                        alert("Please Enter Invoice No");
                                         return false;
                                     }
                                     if ($.trim($('#Customersname').val()).length == 0) {
@@ -561,7 +561,7 @@ if ($_SESSION["User_type"] == "Admin") {
                             if ($_SESSION["User_type"] == "Admin" or $row["Branch"] == $Branch) {
                         ?>
                                 <div class="page-header">
-                                    <h2>UpDate Sales</h2>
+                                    <h2>Update Sales Record (बिक्री खाता)</h2>
                                 </div>
                                 <p>Please fill this form and submit to UpDate Sales record to the database.</p>
                                 <form id="Cheque_form" method="post">
@@ -576,7 +576,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                         </tr>
                                         <tr>
                                             <th>
-                                                <label for="panno">Bill No</label>
+                                                <label for="panno">Invoice No</label>
                                             </th>
                                             <td>
                                                 <input type="number" name="Bill_no" id="billno" class="form-control" value="<?php echo $row["Bill_no"]; ?>" required>
@@ -652,7 +652,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                                 return false;
                                             }
                                             if ($.trim($('#billno').val()).length == 0) {
-                                                alert("Please Enter Bill no");
+                                                alert("Please Enter Invoice No");
                                                 return false;
                                             }
                                             if ($.trim($('#Customersname').val()).length == 0) {
@@ -687,7 +687,7 @@ if ($_SESSION["User_type"] == "Admin") {
                     } else {
                         ?>
                         <div class="page-header clearfix">
-                            <h2 class="pull-left">Sales's List</h2>
+                            <h2 class="pull-left">Sales's Register (बिक्री खाता)</h2>
                             <a href="sales.php?add=1" class="btn btn-success pull-right">Add New Record</a><br><br>
                         </div>
                         <form method="post" id="filter_form">
@@ -721,14 +721,42 @@ if ($_SESSION["User_type"] == "Admin") {
                             });
                         </script>
                         <div id="Ratelist" class="table-responsive">
+                            <?php
+                            $statement = $connect->prepare("
+                            SELECT * FROM Branch  
+                                WHERE id = :id
+                                LIMIT 1
+                            ");
+                            $statement->execute(
+                                array(
+                                    ':id'       =>  $_SESSION["Linked_branch"]
+                                )
+                            );
+                            $result = $statement->fetch();
+                            ?>
+                            <center>
+                                <table>
+                                    <tr>
+                                        <th>
+                                            <span>
+                                                PAN No:
+                                            </span>
+                                        </th>
+                                        <th>
+                                            <input type="text" name="PAN" id="PAN" readonly class="form-control" style="text-align:center; color:blue;" value="<?php echo $result["PAN"]; ?>">
+                                        </th>
+                                    </tr>
+                                </table>
+                                <br>
+                            </center>
                             <table id="data-table" class='table table-bordered table-striped'>
                                 <thead>
                                     <tr>
                                         <td>#</td>
                                         <td>Date</td>
-                                        <td>Bill no</td>
-                                        <td>Customers name</td>
-                                        <td>Customers PAN no</td>
+                                        <td>Invoice No</td>
+                                        <td>Customer's name</td>
+                                        <td>Customer's PAN no</td>
                                         <td>Total sales amount</td>
                                         <td>VAT included sales amount</td>
                                         <td>VAT amount</td>

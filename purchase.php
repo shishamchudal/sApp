@@ -334,7 +334,7 @@ WHERE Purchase_Ledger.Branch = :Branch
 <html lang="en">
 
 <head>
-    <title>Purchase's List</title>
+    <title>Purchase's Register (खरिद खाता)</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -415,7 +415,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                     ?>
 
                         <div class="page-header">
-                            <h2>Add Records</h2>
+                            <h2>Add Purchase Record (खरिद खाता)</h2>
                         </div>
                         <p>Please fill this form and submit to add purchase record to the database.!</p>
                         <form id="Cheque_form" method="post">
@@ -430,7 +430,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                 </tr>
                                 <tr>
                                     <th>
-                                        <label for="panno">Bill No</label>
+                                        <label for="panno">Invoice No</label>
                                     </th>
                                     <td>
                                         <input type="number" name="Bill_No" id="billno" class="form-control" required>
@@ -518,7 +518,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         return false;
                                     }
                                     if ($.trim($('#billno').val()).length == 0) {
-                                        alert("Please Enter Bill no");
+                                        alert("Please Enter Invoice No");
                                         return false;
                                     }
                                     if ($.trim($('#Customersname').val()).length == 0) {
@@ -561,7 +561,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                             if ($_SESSION["User_type"] == "Admin" or $row["Branch"] == $Branch) {
                         ?>
                                 <div class="page-header">
-                                    <h2>UpDate Purchase</h2>
+                                    <h2>Update Purchase Record (खरिद खाता)</h2>
                                 </div>
                                 <p>Please fill this form and submit to UpDate purchase record to the database.</p>
                                 <form id="Cheque_form" method="post">
@@ -576,7 +576,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         </tr>
                                         <tr>
                                             <th>
-                                                <label for="panno">Bill No</label>
+                                                <label for="panno">Invoice No</label>
                                             </th>
                                             <td>
                                                 <input type="number" name="Bill_No" id="billno" class="form-control" value="<?php echo $row["Bill_No"]; ?>" required>
@@ -652,7 +652,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                                 return false;
                                             }
                                             if ($.trim($('#billno').val()).length == 0) {
-                                                alert("Please Enter Bill no");
+                                                alert("Please Enter Invoice No");
                                                 return false;
                                             }
                                             if ($.trim($('#Customersname').val()).length == 0) {
@@ -687,7 +687,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                     } else {
                         ?>
                         <div class="page-header clearfix">
-                            <h2 class="pull-left">Purchase's List</h2>
+                            <h2 class="pull-left">Purchase's Register (खरिद खाता)</h2>
                             <a href="purchase.php?add=1" class="btn btn-success pull-right">Add New Record</a><br><br>
                         </div>
                         <form method="post" id="filter_form">
@@ -721,12 +721,41 @@ WHERE Purchase_Ledger.Branch = :Branch
                             });
                         </script>
                         <div id="Ratelist" class="table-responsive">
+                        <div id="Ratelist" class="table-responsive">
+                            <?php
+                            $statement = $connect->prepare("
+                            SELECT * FROM Branch  
+                                WHERE id = :id
+                                LIMIT 1
+                            ");
+                            $statement->execute(
+                                array(
+                                    ':id'       =>  $_SESSION["Linked_branch"]
+                                )
+                            );
+                            $result = $statement->fetch();
+                            ?>
+                            <center>
+                                <table>
+                                    <tr>
+                                        <th>
+                                            <span>
+                                                PAN No:
+                                            </span>
+                                        </th>
+                                        <th>
+                                            <input type="text" name="PAN" id="PAN" readonly class="form-control" style="text-align:center; color:blue;" value="<?php echo $result["PAN"]; ?>">
+                                        </th>
+                                    </tr>
+                                </table>
+                                <br>
+                            </center>
                             <table id="data-table" class='table table-bordered table-striped'>
                                 <thead>
                                     <tr>
                                         <td>#</td>
                                         <td>Date</td>
-                                        <td>Bill no</td>
+                                        <td>Invoice No</td>
                                         <td>Seller's name</td>
                                         <td>Seller's PAN no</td>
                                         <td>Total purchase amount</td>
