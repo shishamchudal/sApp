@@ -29,13 +29,20 @@
           <i class="fas fa-fw fa-table"></i>
           <span>Purchase</span></a>
       </li>
-
+<?php
+include_once 'header.php';
+if ($_SESSION["User_type"] == "Admin") {
+?>
       <!-- Nav Item - Tables -->
       <li class="nav-item">
         <a class="nav-link" href="branch.php">
           <i class="fas fa-fw fa-map-marker"></i>
           <span>Branch</span></a>
       </li>
+
+      <?php
+}
+      ?>
 
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block">

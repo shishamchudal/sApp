@@ -2,32 +2,32 @@
 include 'includes/header.php';
 include('functions.php');
 include('database_connection.php');
-
-$statement = $connect->prepare("
-SELECT
-Sales_Ledger.id,
-Sales_Ledger.Date,
-Sales_Ledger.Bill_no,
-Sales_Ledger.Customers_name,
-Sales_Ledger.Customers_PAN_no,
-Sales_Ledger.Total_sales_amount,
-Sales_Ledger.VAT_included_sales_amount,
-Sales_Ledger.VAT_included_sales_VAT,
-Branch.Name
-FROM
-Sales_Ledger
-JOIN Branch ON Sales_Ledger.Branch = Branch.id
-    order by Date
-");
-
-$statement->execute();
-
-$all_result = $statement->fetchAll();
-
-$total_rows = $statement->rowCount();
-
-if (isset($_POST['filter'])) {
+if ($_SESSION["User_type"] == "Admin") {
     $statement = $connect->prepare("
+    SELECT
+    Sales_Ledger.id,
+    Sales_Ledger.Date,
+    Sales_Ledger.Bill_no,
+    Sales_Ledger.Customers_name,
+    Sales_Ledger.Customers_PAN_no,
+    Sales_Ledger.Total_sales_amount,
+    Sales_Ledger.VAT_included_sales_amount,
+    Sales_Ledger.VAT_included_sales_VAT,
+    Branch.Name
+    FROM
+    Sales_Ledger
+    JOIN Branch ON Sales_Ledger.Branch = Branch.id
+        order by Date
+    ");
+
+    $statement->execute();
+
+    $all_result = $statement->fetchAll();
+
+    $total_rows = $statement->rowCount();
+
+    if (isset($_POST['filter'])) {
+        $statement = $connect->prepare("
     SELECT
     Sales_Ledger.id,
     Sales_Ledger.Date,
@@ -44,31 +44,31 @@ if (isset($_POST['filter'])) {
     WHERE Date Between :startDate AND :endDate order by Date;
     ");
 
-    $statement->execute(
-        array(
-            ':startDate' => trim($_POST["startDate"]),
-            ':endDate' => trim($_POST["endDate"])
-        )
-    );
-    $all_result = $statement->fetchAll();
+        $statement->execute(
+            array(
+                ':startDate' => trim($_POST["startDate"]),
+                ':endDate' => trim($_POST["endDate"])
+            )
+        );
+        $all_result = $statement->fetchAll();
 
-    $total_rows = $statement->rowCount();
-}
+        $total_rows = $statement->rowCount();
+    }
 
-$name = $_SESSION['name'];
-if (isset($_POST["Add"])) {
-    try {
-        echo
-            "<hr> Date: " . trim($_POST["Date"]) .
-                "<br> Bill_no: " . trim($_POST["Bill_no"]) .
-                "<br> Customers_name: " . trim($_POST["Customers_name"]) .
-                "<br> Customers_PAN_no: " . trim($_POST["Customers_PAN_no"]) .
-                "<br> Total_sales_amount: " . trim($_POST["Total_sales_amount"]) .
-                "<br> VAT_included_sales_amount: " . trim($_POST["VAT_included_sales_amount"]) .
-                "<br> VAT_included_sales_VAT: " . trim($_POST["VAT_included_sales_VAT"]) .
-                "<br> Branch: " . trim($_POST["Branch"]) .
-                "<hr>";
-        $statement = $connect->prepare("
+    $name = $_SESSION['name'];
+    if (isset($_POST["Add"])) {
+        try {
+            echo
+                "<hr> Date: " . trim($_POST["Date"]) .
+                    "<br> Bill_no: " . trim($_POST["Bill_no"]) .
+                    "<br> Customers_name: " . trim($_POST["Customers_name"]) .
+                    "<br> Customers_PAN_no: " . trim($_POST["Customers_PAN_no"]) .
+                    "<br> Total_sales_amount: " . trim($_POST["Total_sales_amount"]) .
+                    "<br> VAT_included_sales_amount: " . trim($_POST["VAT_included_sales_amount"]) .
+                    "<br> VAT_included_sales_VAT: " . trim($_POST["VAT_included_sales_VAT"]) .
+                    "<br> Branch: " . trim($_POST["Branch"]) .
+                    "<hr>";
+            $statement = $connect->prepare("
         INSERT INTO `Sales_Ledger`(
             `Date`,
             `Bill_no`,
@@ -90,28 +90,28 @@ if (isset($_POST["Add"])) {
             :Branch
         );
         ");
-        $statement->execute(
-            array(
-                ':Date'               =>  trim($_POST["Date"]),
-                ':Bill_no'             =>  trim($_POST["Bill_no"]),
-                ':Customers_name'             =>  trim($_POST["Customers_name"]),
-                ':Customers_PAN_no'             =>  trim($_POST["Customers_PAN_no"]),
-                ':Total_sales_amount'             =>  trim($_POST["Total_sales_amount"]),
-                ':VAT_included_sales_amount'             =>  trim($_POST["VAT_included_sales_amount"]),
-                ':VAT_included_sales_VAT'             =>  trim($_POST["VAT_included_sales_VAT"]),
-                ':Branch'             =>  trim($_POST["Branch"])
-            )
-        );
-        echo "Added Sucessfully";
-    } catch (Exception $e) {
-        echo 'Caught exception: ',  $e->getMessage(), "\n";
+            $statement->execute(
+                array(
+                    ':Date'               =>  trim($_POST["Date"]),
+                    ':Bill_no'             =>  trim($_POST["Bill_no"]),
+                    ':Customers_name'             =>  trim($_POST["Customers_name"]),
+                    ':Customers_PAN_no'             =>  trim($_POST["Customers_PAN_no"]),
+                    ':Total_sales_amount'             =>  trim($_POST["Total_sales_amount"]),
+                    ':VAT_included_sales_amount'             =>  trim($_POST["VAT_included_sales_amount"]),
+                    ':VAT_included_sales_VAT'             =>  trim($_POST["VAT_included_sales_VAT"]),
+                    ':Branch'             =>  trim($_POST["Branch"])
+                )
+            );
+            echo "Added Sucessfully";
+        } catch (Exception $e) {
+            echo 'Caught exception: ',  $e->getMessage(), "\n";
+        }
+        header("location:sales.php");
     }
-    header("location:sales.php");
-}
-if (isset($_GET["update"])) {
-    if (isset($_POST["Update"])) {
-        $id = $_GET["id"];
-        $statement = $connect->prepare("
+    if (isset($_GET["update"])) {
+        if (isset($_POST["Update"])) {
+            $id = $_GET["id"];
+            $statement = $connect->prepare("
             UPDATE `Sales_Ledger` 
             SET `Date` = :Date,
             `Bill_no` = :Bill_no,
@@ -122,34 +122,213 @@ if (isset($_GET["update"])) {
             `VAT_included_sales_VAT` = :VAT_included_sales_VAT
             WHERE id = :id;
             ");
+            $statement->execute(
+                array(
+                    ':id'                   => $id,
+                    ':Date'               =>  trim($_POST["Date"]),
+                    ':Bill_no'             =>  trim($_POST["Bill_no"]),
+                    ':Customers_name'             =>  trim($_POST["Customers_name"]),
+                    ':Customers_PAN_no'             =>  trim($_POST["Customers_PAN_no"]),
+                    ':Total_sales_amount'             =>  trim($_POST["Total_sales_amount"]),
+                    ':VAT_included_sales_amount'             =>  trim($_POST["VAT_included_sales_amount"]),
+                    ':VAT_included_sales_VAT'             =>  trim($_POST["VAT_included_sales_VAT"])
+                )
+            );
+            echo "Values updated sucessfully!";
+            header("location:sales.php");
+        }
+    }
+    if (isset($_GET["delete"]) && isset($_GET["id"])) {
+        $statement = $connect->prepare(
+            "DELETE FROM Sales_Ledger WHERE id = :id"
+        );
         $statement->execute(
             array(
-                ':id'                   => $id,
-                ':Date'               =>  trim($_POST["Date"]),
-                ':Bill_no'             =>  trim($_POST["Bill_no"]),
-                ':Customers_name'             =>  trim($_POST["Customers_name"]),
-                ':Customers_PAN_no'             =>  trim($_POST["Customers_PAN_no"]),
-                ':Total_sales_amount'             =>  trim($_POST["Total_sales_amount"]),
-                ':VAT_included_sales_amount'             =>  trim($_POST["VAT_included_sales_amount"]),
-                ':VAT_included_sales_VAT'             =>  trim($_POST["VAT_included_sales_VAT"])
+                ':id'       =>      $_GET["id"]
             )
         );
-        echo "Values updated sucessfully!";
         header("location:sales.php");
     }
-}
-if (isset($_GET["delete"]) && isset($_GET["id"])) {
-    $statement = $connect->prepare(
-        "DELETE FROM Sales_Ledger WHERE id = :id"
-    );
+} else {
+    $Branch = $_SESSION['Linked_branch'];
+    $statement = $connect->prepare("
+    SELECT
+    Sales_Ledger.id,
+    Sales_Ledger.Date,
+    Sales_Ledger.Bill_no,
+    Sales_Ledger.Customers_name,
+    Sales_Ledger.Customers_PAN_no,
+    Sales_Ledger.Total_sales_amount,
+    Sales_Ledger.VAT_included_sales_amount,
+    Sales_Ledger.VAT_included_sales_VAT,
+    Branch.Name
+    FROM
+    Sales_Ledger
+    JOIN Branch ON Sales_Ledger.Branch = Branch.id
+    WHERE Sales_Ledger.Branch = :Branch
+        order by Date
+    ");
+
     $statement->execute(
         array(
-            ':id'       =>      $_GET["id"]
+            ':Branch'   => $Branch
         )
     );
-    header("location:sales.php");
-}
 
+    $all_result = $statement->fetchAll();
+
+    $total_rows = $statement->rowCount();
+
+    if (isset($_POST['filter'])) {
+        $statement = $connect->prepare("
+    SELECT
+    Sales_Ledger.id,
+    Sales_Ledger.Date,
+    Sales_Ledger.Bill_no,
+    Sales_Ledger.Customers_name,
+    Sales_Ledger.Customers_PAN_no,
+    Sales_Ledger.Total_sales_amount,
+    Sales_Ledger.VAT_included_sales_amount,
+    Sales_Ledger.VAT_included_sales_VAT,
+    Branch.Name
+    FROM
+    Sales_Ledger
+    JOIN Branch ON Sales_Ledger.Branch = Branch.id
+    WHERE Date Between :startDate AND :endDate 
+    AND Sales_Ledger.Branch = :Branch
+    order by Date;
+    ");
+
+        $statement->execute(
+            array(
+                ':startDate' => trim($_POST["startDate"]),
+                ':endDate' => trim($_POST["endDate"]),
+                ':Branch'   => $Branch
+            )
+        );
+        $all_result = $statement->fetchAll();
+
+        $total_rows = $statement->rowCount();
+    }
+
+    $name = $_SESSION['name'];
+    if (isset($_POST["Add"])) {
+        try {
+            echo
+                "<hr> Date: " . trim($_POST["Date"]) .
+                    "<br> Bill_no: " . trim($_POST["Bill_no"]) .
+                    "<br> Customers_name: " . trim($_POST["Customers_name"]) .
+                    "<br> Customers_PAN_no: " . trim($_POST["Customers_PAN_no"]) .
+                    "<br> Total_sales_amount: " . trim($_POST["Total_sales_amount"]) .
+                    "<br> VAT_included_sales_amount: " . trim($_POST["VAT_included_sales_amount"]) .
+                    "<br> VAT_included_sales_VAT: " . trim($_POST["VAT_included_sales_VAT"]) .
+                    "<br> Branch: " . trim($_POST["Branch"]) .
+                    "<hr>";
+            $statement = $connect->prepare("
+        INSERT INTO `Sales_Ledger`(
+            `Date`,
+            `Bill_no`,
+            `Customers_name`,
+            `Customers_PAN_no`,
+            `Total_sales_amount`,
+            `VAT_included_sales_amount`,
+            `VAT_included_sales_VAT`,
+            `Branch`
+        )
+        VALUES(
+            :Date,
+            :Bill_no,
+            :Customers_name,
+            :Customers_PAN_no,
+            :Total_sales_amount,
+            :VAT_included_sales_amount,
+            :VAT_included_sales_VAT,
+            :Branch
+        );
+        ");
+            $statement->execute(
+                array(
+                    ':Date'               =>  trim($_POST["Date"]),
+                    ':Bill_no'             =>  trim($_POST["Bill_no"]),
+                    ':Customers_name'             =>  trim($_POST["Customers_name"]),
+                    ':Customers_PAN_no'             =>  trim($_POST["Customers_PAN_no"]),
+                    ':Total_sales_amount'             =>  trim($_POST["Total_sales_amount"]),
+                    ':VAT_included_sales_amount'             =>  trim($_POST["VAT_included_sales_amount"]),
+                    ':VAT_included_sales_VAT'             =>  trim($_POST["VAT_included_sales_VAT"]),
+                    ':Branch'             =>  trim($_POST["Branch"])
+                )
+            );
+            echo "Added Sucessfully";
+        } catch (Exception $e) {
+            echo 'Caught exception: ',  $e->getMessage(), "\n";
+        }
+        header("location:sales.php");
+    }
+    if (isset($_GET["update"])) {
+        if (isset($_POST["Update"])) {
+            $id = $_GET["id"];
+            $statement = $connect->prepare("
+            UPDATE `Sales_Ledger` 
+            SET `Date` = :Date,
+            `Bill_no` = :Bill_no,
+            `Customers_name` = :Customers_name,
+            `Customers_PAN_no` = :Customers_PAN_no,
+            `Total_sales_amount` = :Total_sales_amount,
+            `VAT_included_sales_amount` = :VAT_included_sales_amount,
+            `VAT_included_sales_VAT` = :VAT_included_sales_VAT
+            WHERE id = :id;
+            ");
+            $statement->execute(
+                array(
+                    ':id'                   => $id,
+                    ':Date'               =>  trim($_POST["Date"]),
+                    ':Bill_no'             =>  trim($_POST["Bill_no"]),
+                    ':Customers_name'             =>  trim($_POST["Customers_name"]),
+                    ':Customers_PAN_no'             =>  trim($_POST["Customers_PAN_no"]),
+                    ':Total_sales_amount'             =>  trim($_POST["Total_sales_amount"]),
+                    ':VAT_included_sales_amount'             =>  trim($_POST["VAT_included_sales_amount"]),
+                    ':VAT_included_sales_VAT'             =>  trim($_POST["VAT_included_sales_VAT"])
+                )
+            );
+            echo "Values updated sucessfully!";
+            header("location:sales.php");
+        }
+    }
+    if (isset($_GET["delete"]) && isset($_GET["id"])) {
+        $statement = $connect->prepare("
+                        SELECT * FROM Sales_Ledger  
+                            WHERE id = :id
+                            LIMIT 1
+                        ");
+        $statement->execute(
+            array(
+                ':id'       =>  $_GET["id"]
+            )
+        );
+        $result = $statement->fetchAll();
+        foreach ($result as $row) {
+
+            if ($_SESSION["User_type"] == "Admin" or $row["Branch"] == $Branch) {
+                $statement = $connect->prepare(
+                    "DELETE FROM Sales_Ledger WHERE id = :id"
+                );
+                $statement->execute(
+                    array(
+                        ':id'       =>      $_GET["id"]
+                    )
+                );
+                header("location:sales.php");
+            } else {
+?>
+                    <script>
+                        alert("You are not allowed to delete it😡!");
+                        window.top.location='sales.php';
+                    </script>
+<?php
+            }
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -318,10 +497,10 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                         </form>
                         <script>
                             $(document).ready(function() {
-                                    $('#date').datepicker({
-                                        format: "yyyy-mm-dd",
-                                        autoclose: true
-                                    });
+                                $('#date').datepicker({
+                                    format: "yyyy-mm-dd",
+                                    autoclose: true
+                                });
 
                                 function calc_vat_amt() {
                                     var sales_amount = $("#sales_amount").val();
@@ -379,122 +558,131 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                         );
                         $result = $statement->fetchAll();
                         foreach ($result as $row) {
+                            if ($_SESSION["User_type"] == "Admin" or $row["Branch"] == $Branch) {
                         ?>
-                            <div class="page-header">
-                                <h2>UpDate Sales</h2>
-                            </div>
-                            <p>Please fill this form and submit to UpDate Sales record to the database.</p>
-                            <form id="Cheque_form" method="post">
-                                <table id="data-table" class='table table-bordered table-striped'>
-                                    <tr>
-                                        <th>
-                                            <label for="name">Date</label>
-                                        </th>
-                                        <td>
-                                            <input type="date" name="Date" id="date" required class="form-control" value="<?php echo $row["Date"]; ?>">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <label for="panno">Bill No</label>
-                                        </th>
-                                        <td>
-                                            <input type="number" name="Bill_no" id="billno" class="form-control" value="<?php echo $row["Bill_no"]; ?>" required>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <label for="phone">Customer's Name</label>
-                                        </th>
-                                        <td>
-                                            <input type="text" name="Customers_name" id="Customersname" value="<?php echo $row["Customers_name"]; ?>" required class="form-control">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <label for="phone">Customer's PAN No</label>
-                                        </th>
-                                        <td>
-                                            <input type="number" name="Customers_PAN_no" id="Customerspanno" value="<?php echo $row["Customers_PAN_no"]; ?>" required class="form-control">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <label for="phone">Total Sales Amount</label>
-                                        </th>
-                                        <td>
-                                            <input type="number" name="Total_sales_amount" id="totalsalesamount" value="<?php echo $row["Total_sales_amount"]; ?>" required class="form-control" readonly>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <label for="phone">Sales Amount</label>
-                                        </th>
-                                        <td>
-                                            <input type="number" name="VAT_included_sales_amount" id="sales_amount" value="<?php echo $row["VAT_included_sales_amount"]; ?>" required class="form-control sales_amount">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            <label for="phone">VAT Amount</label>
-                                        </th>
-                                        <td>
-                                            <input type="number" name="VAT_included_sales_VAT" id="vat_amount" value="<?php echo $row["VAT_included_sales_VAT"]; ?>" required class="form-control vat_amount" readonly>
-                                        </td>
-                                    </tr>
+                                <div class="page-header">
+                                    <h2>UpDate Sales</h2>
+                                </div>
+                                <p>Please fill this form and submit to UpDate Sales record to the database.</p>
+                                <form id="Cheque_form" method="post">
+                                    <table id="data-table" class='table table-bordered table-striped'>
+                                        <tr>
+                                            <th>
+                                                <label for="name">Date</label>
+                                            </th>
+                                            <td>
+                                                <input type="date" name="Date" id="date" required class="form-control" value="<?php echo $row["Date"]; ?>">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                <label for="panno">Bill No</label>
+                                            </th>
+                                            <td>
+                                                <input type="number" name="Bill_no" id="billno" class="form-control" value="<?php echo $row["Bill_no"]; ?>" required>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                <label for="phone">Customer's Name</label>
+                                            </th>
+                                            <td>
+                                                <input type="text" name="Customers_name" id="Customersname" value="<?php echo $row["Customers_name"]; ?>" required class="form-control">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                <label for="phone">Customer's PAN No</label>
+                                            </th>
+                                            <td>
+                                                <input type="number" name="Customers_PAN_no" id="Customerspanno" value="<?php echo $row["Customers_PAN_no"]; ?>" required class="form-control">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                <label for="phone">Total Sales Amount</label>
+                                            </th>
+                                            <td>
+                                                <input type="number" name="Total_sales_amount" id="totalsalesamount" value="<?php echo $row["Total_sales_amount"]; ?>" required class="form-control" readonly>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                <label for="phone">Sales Amount</label>
+                                            </th>
+                                            <td>
+                                                <input type="number" name="VAT_included_sales_amount" id="sales_amount" value="<?php echo $row["VAT_included_sales_amount"]; ?>" required class="form-control sales_amount">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                <label for="phone">VAT Amount</label>
+                                            </th>
+                                            <td>
+                                                <input type="number" name="VAT_included_sales_VAT" id="vat_amount" value="<?php echo $row["VAT_included_sales_VAT"]; ?>" required class="form-control vat_amount" readonly>
+                                            </td>
+                                        </tr>
 
-                                    <td>
-                                        <input type="submit" id="Add" class="btn btn-primary" value="Update" name="Update">
-                                        <a href="sales.php" class="btn btn-default">Cancel</a>
-                                    </td>
-                                </table>
-                            </form>
-                            <script>
-                                $(document).ready(function() {
-                                    $('#date').datepicker({
-                                        format: "yyyy-mm-dd",
-                                        autoclose: true
+                                        <td>
+                                            <input type="submit" id="Add" class="btn btn-primary" value="Update" name="Update">
+                                            <a href="sales.php" class="btn btn-default">Cancel</a>
+                                        </td>
+                                    </table>
+                                </form>
+                                <script>
+                                    $(document).ready(function() {
+                                        $('#date').datepicker({
+                                            format: "yyyy-mm-dd",
+                                            autoclose: true
+                                        });
+
+                                        function calc_vat_amt() {
+                                            var sales_amount = $("#sales_amount").val();
+                                            var vat_amount = (13 / 100) * sales_amount;
+                                            $('#vat_amount').val(vat_amount);
+                                            var total_amount = parseFloat(sales_amount) + parseFloat(vat_amount);
+                                            $('#totalsalesamount').val(total_amount)
+                                        }
+                                        $(document).on('blur', '#sales_amount', function() {
+                                            calc_vat_amt();
+                                        });
+                                        $('#Add').click(function() {
+                                            if ($.trim($('#date').val()).length == 0) {
+                                                alert("Please Enter Date");
+                                                return false;
+                                            }
+                                            if ($.trim($('#billno').val()).length == 0) {
+                                                alert("Please Enter Bill no");
+                                                return false;
+                                            }
+                                            if ($.trim($('#Customersname').val()).length == 0) {
+                                                alert("Please Enter Customers name");
+                                                return false;
+                                            }
+                                            if ($.trim($('#Customerspanno').val()).length == 0) {
+                                                alert("Please Enter Customers pan no");
+                                                return false;
+                                            }
+
+                                            if ($.trim($('#sales_amount').val()).length == 0) {
+                                                alert("Please Enter Sales amount");
+                                                return false;
+                                            }
+                                            $('#Cheque_form').submit();
+                                            alert('Record Updated sucessfully!');
+                                        });
+
                                     });
-
-                                    function calc_vat_amt() {
-                                        var sales_amount = $("#sales_amount").val();
-                                        var vat_amount = (13 / 100) * sales_amount;
-                                        $('#vat_amount').val(vat_amount);
-                                        var total_amount = parseFloat(sales_amount) + parseFloat(vat_amount);
-                                        $('#totalsalesamount').val(total_amount)
-                                    }
-                                    $(document).on('blur', '#sales_amount', function() {
-                                        calc_vat_amt();
-                                    });
-                                    $('#Add').click(function() {
-                                        if ($.trim($('#date').val()).length == 0) {
-                                            alert("Please Enter Date");
-                                            return false;
-                                        }
-                                        if ($.trim($('#billno').val()).length == 0) {
-                                            alert("Please Enter Bill no");
-                                            return false;
-                                        }
-                                        if ($.trim($('#Customersname').val()).length == 0) {
-                                            alert("Please Enter Customers name");
-                                            return false;
-                                        }
-                                        if ($.trim($('#Customerspanno').val()).length == 0) {
-                                            alert("Please Enter Customers pan no");
-                                            return false;
-                                        }
-
-                                        if ($.trim($('#sales_amount').val()).length == 0) {
-                                            alert("Please Enter Sales amount");
-                                            return false;
-                                        }
-                                        $('#Cheque_form').submit();
-                                        alert('Record Updated sucessfully!');
-                                    });
-
-                                });
-                            </script>
+                                </script>
+                            <?php
+                            } else {
+                            ?>
+                                <div class="page-header">
+                                    <h2>You are not allowed here!</h2>
+                                    <p><a href="sales.php" class="btn btn-danger">Go Back!</a></p>
+                                </div>
                         <?php
+                            }
                         }
                     } else {
                         ?>

@@ -2,62 +2,93 @@
 include 'includes/header.php';
 include('functions.php');
 include('database_connection.php');
+if ($_SESSION["User_type"] == "Admin") {
 
-$statement = $connect->prepare("
-SELECT * FROM Branch
+    $statement = $connect->prepare("
+SELECT
+Branch.id,
+Branch.Name,
+Branch.Address,
+Branch.Phone,
+Branch.Branch_type,
+accounts.username
+FROM
+Branch
+JOIN accounts ON Branch.Linked_account = accounts.id
 ");
 
-$statement->execute();
+    $statement->execute();
 
-$all_result = $statement->fetchAll();
+    $all_result = $statement->fetchAll();
 
-$total_rows = $statement->rowCount();
+    $total_rows = $statement->rowCount();
 
-$name = $_SESSION['name'];
-if (isset($_POST["Add"])) {
-    try {
-        echo
-            "<hr> Date: " . trim($_POST["Date"]) .
-                "<br> Bill_no: " . trim($_POST["Bill_no"]) .
-                "<br> Customers_name: " . trim($_POST["Customers_name"]) .
-                "<br> Customers_PAN_no: " . trim($_POST["Customers_PAN_no"]) .
-                "<br> Total_sales_amount: " . trim($_POST["Total_sales_amount"]) .
-                "<br> VAT_included_sales_amount: " . trim($_POST["VAT_included_sales_amount"]) .
-                "<br> VAT_included_sales_VAT: " . trim($_POST["VAT_included_sales_VAT"]) .
-                "<br> Branch: " . trim($_POST["Branch"]) .
-                "<hr>";
-        $statement = $connect->prepare("
+    $name = $_SESSION['name'];
+    if (isset($_POST["Add"])) {
+        try {
+            echo
+                "<hr> Date: " . trim($_POST["Date"]) .
+                    "<br> Bill_no: " . trim($_POST["Bill_no"]) .
+                    "<br> Customers_name: " . trim($_POST["Customers_name"]) .
+                    "<br> Customers_PAN_no: " . trim($_POST["Customers_PAN_no"]) .
+                    "<br> Total_sales_amount: " . trim($_POST["Total_sales_amount"]) .
+                    "<br> VAT_included_sales_amount: " . trim($_POST["VAT_included_sales_amount"]) .
+                    "<br> VAT_included_sales_VAT: " . trim($_POST["VAT_included_sales_VAT"]) .
+                    "<br> Branch: " . trim($_POST["Branch"]) .
+                    "<hr>";
+            $statement = $connect->prepare("
         INSERT INTO `Branch`(
             `Name`,
             `Address`,
             `Phone`,
-            `Branch_type`
+            `Branch_type`,
+            `Linked_account`
         )
         VALUES(
             :Name,
             :Address,
             :Phone,
-            :Branch_type
+            :Branch_type,
+            :Linked_account
         );
         ");
-        $statement->execute(
-            array(
-                ':Name'               =>  trim($_POST["Name"]),
-                ':Address'             =>  trim($_POST["Address"]),
-                ':Phone'             =>  trim($_POST["Phone"]),
-                ':Branch_type'             =>  trim($_POST["Branch_type"])
-            )
-        );
-        echo "Added Sucessfully";
-    } catch (Exception $e) {
-        echo 'Caught exception: ',  $e->getMessage(), "\n";
+            $statement->execute(
+                array(
+                    ':Name'               =>  trim($_POST["Name"]),
+                    ':Address'             =>  trim($_POST["Address"]),
+                    ':Phone'             =>  trim($_POST["Phone"]),
+                    ':Branch_type'             =>  trim($_POST["Branch_type"]),
+                    ':Linked_account'             =>  trim($_POST["Linked_account"])
+                )
+            );
+
+            $statement = $connect->query("SELECT LAST_INSERT_ID()");
+            $Linked_branch = $statement->fetchColumn();
+
+            $statement = $connect->prepare("
+        UPDATE
+            `accounts`
+        SET
+            `Linked_branch` = :Linked_branch
+        WHERE
+            `id` = :id
+        ");
+            $statement->execute(
+                array(
+                    ':id'               =>  trim($_POST["Linked_account"]),
+                    ':Linked_branch'    =>  trim($Linked_branch)
+                )
+            );
+            echo "Added Sucessfully";
+        } catch (Exception $e) {
+            echo 'Caught exception: ',  $e->getMessage(), "\n";
+        }
+        header("location:Branch.php");
     }
-    header("location:Branch.php");
-}
-if (isset($_GET["update"])) {
-    if (isset($_POST["Update"])) {
-        $id = $_GET["id"];
-        $statement = $connect->prepare("
+    if (isset($_GET["update"])) {
+        if (isset($_POST["Update"])) {
+            $id = $_GET["id"];
+            $statement = $connect->prepare("
         UPDATE
     `Branch`
 SET
@@ -67,30 +98,38 @@ SET
 WHERE
     `id` = :id
             ");
+            $statement->execute(
+                array(
+                    ':Name'               =>  trim($_POST["Name"]),
+                    ':Address'             =>  trim($_POST["Address"]),
+                    ':Phone'             =>  trim($_POST["Phone"]),
+                    ':id'             =>  trim($id)
+                )
+            );
+            echo "Values updated sucessfully!";
+            header("location:Branch.php");
+        }
+    }
+    if (isset($_GET["delete"]) && isset($_GET["id"])) {
+        $statement = $connect->prepare(
+            "DELETE FROM Branch WHERE id = :id"
+        );
         $statement->execute(
             array(
-                ':Name'               =>  trim($_POST["Name"]),
-                ':Address'             =>  trim($_POST["Address"]),
-                ':Phone'             =>  trim($_POST["Phone"]),
-                ':id'             =>  trim($id)
+                ':id'       =>      $_GET["id"]
             )
         );
-        echo "Values updated sucessfully!";
         header("location:Branch.php");
     }
+} else {
+    echo '
+        <script>
+            alert("😡😡You are not allowed to view this page😡😡!");
+            window.top.location="index.php";
+        </script>
+    ';
+    exit;
 }
-if (isset($_GET["delete"]) && isset($_GET["id"])) {
-    $statement = $connect->prepare(
-        "DELETE FROM Branch WHERE id = :id"
-    );
-    $statement->execute(
-        array(
-            ':id'       =>      $_GET["id"]
-        )
-    );
-    header("location:Branch.php");
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -218,6 +257,31 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                     </td>
                                 </tr>
                                 <tr>
+                                    <th>
+                                        <label for="phone">Linked Account</label>
+                                    </th>
+                                    <td>
+                                        <select name="Linked_account" id="Linked_account" required class="form-control Linked_account">
+                                            <?php
+                                            $statement = $connect->prepare("
+                                                    SELECT id, username FROM accounts
+                                                ");
+
+                                            $statement->execute();
+
+                                            $all_result = $statement->fetchAll();
+
+
+                                            foreach ($all_result as $row) {
+                                                echo '
+                                                    <option value="' . $row["id"] . '">' . $row["username"] . '</option>
+                                                ';
+                                            }
+                                            ?>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td colspan="2">
                                         <input type="submit" id="Add" class="btn btn-primary" value="Add" name="Add">
                                         <a href="Branch.php" class="btn btn-default">Cancel</a>
@@ -317,6 +381,7 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                         <td>Address</td>
                                         <td>Phone</td>
                                         <td>Branch Type</td>
+                                        <td>Linked Account</td>
                                         <td>Edit</td>
                                         <td>Delete</td>
                                     </tr>
@@ -334,6 +399,7 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                                 <td>' . $row['Address'] . '</td>
                                                 <td>' . $row['Phone'] . '</td>
                                                 <td>' . $row['Branch_type'] . '</td>
+                                                <td>' . $row['username'] . '</td>
                                                 <td><a href="Branch.php?update=1&id=' . $row["id"] . '">Edit</a></td>
                                                 <td><a href="Branch.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
                                             </tr>
