@@ -558,7 +558,7 @@ if (isset($_GET["delete"]) && isset($_GET["id"])) {
                                     ?>
                                 </tbody>
                                 <tr>
-                                    <td colspan="4"><b>Grand Total Amount:</b></td>
+                                    <td colspan="5"><b>Grand Total Amount:</b></td>
                                     <td colspan="1"><b><?php echo $sum; ?></b></td>
                                     <td colspan="6"></td>
                                 </tr>
