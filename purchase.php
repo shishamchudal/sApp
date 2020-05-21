@@ -16,7 +16,7 @@ Purchase_Ledger.VAT_included_purchase_VAT_amount,
 Branch.Name
 FROM
 Purchase_Ledger
-JOIN Branch ON purchase_Ledger.Branch = Branch.id
+JOIN Branch ON Purchase_Ledger.Branch = Branch.id
     order by Date
 ");
 
@@ -40,7 +40,7 @@ JOIN Branch ON purchase_Ledger.Branch = Branch.id
     Branch.Name
     FROM
     Purchase_Ledger
-    JOIN Branch ON purchase_Ledger.Branch = Branch.id
+    JOIN Branch ON Purchase_Ledger.Branch = Branch.id
     WHERE Date Between :startDate AND :endDate order by Date;
     ");
 
@@ -106,7 +106,7 @@ JOIN Branch ON purchase_Ledger.Branch = Branch.id
         } catch (Exception $e) {
             echo 'Caught exception: ',  $e->getMessage(), "\n";
         }
-        header("location:purchase.php");
+        echo "<script type='text/javascript'>window.top.location='purchase.php';</script>"; exit;
     }
     if (isset($_GET["update"])) {
         if (isset($_POST["Update"])) {
@@ -147,7 +147,7 @@ JOIN Branch ON purchase_Ledger.Branch = Branch.id
                 ':id'       =>      $_GET["id"]
             )
         );
-        header("location:Purchase.php");
+        header("location:purchase.php");
     }
 } else {
     $Branch = $_SESSION['Linked_branch'];
@@ -164,7 +164,7 @@ Purchase_Ledger.VAT_included_purchase_VAT_amount,
 Branch.Name
 FROM
 Purchase_Ledger
-JOIN Branch ON purchase_Ledger.Branch = Branch.id
+JOIN Branch ON Purchase_Ledger.Branch = Branch.id
 WHERE Purchase_Ledger.Branch = :Branch
     order by Date
 ");
@@ -193,7 +193,7 @@ WHERE Purchase_Ledger.Branch = :Branch
     Branch.Name
     FROM
     Purchase_Ledger
-    JOIN Branch ON purchase_Ledger.Branch = Branch.id
+    JOIN Branch ON Purchase_Ledger.Branch = Branch.id
     WHERE Date Between :startDate AND :endDate 
     AND Purchase_Ledger.Branch = :Branch
     order by Date;
@@ -262,7 +262,7 @@ WHERE Purchase_Ledger.Branch = :Branch
         } catch (Exception $e) {
             echo 'Caught exception: ',  $e->getMessage(), "\n";
         }
-        header("location:purchase.php");
+        echo "<script type='text/javascript'>window.top.location='purchase.php';</script>"; exit;
     }
     if (isset($_GET["update"])) {
         if (isset($_POST["Update"])) {
@@ -321,7 +321,7 @@ WHERE Purchase_Ledger.Branch = :Branch
             } else {
 ?>
                     <script>
-                        alert("You are not allowed to delete it😡!");
+                        alert("You are not allowed to delete itðŸ˜¡!");
                         window.top.location='purchase.php';
                     </script>
 <?php
@@ -333,9 +333,9 @@ WHERE Purchase_Ledger.Branch = :Branch
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+<head><meta charset="windows-1252">
     <title>Purchase's Register (खरिद खाता)</title>
-    <meta charset="utf-8">
+    
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
@@ -513,10 +513,6 @@ WHERE Purchase_Ledger.Branch = :Branch
                                     calc_vat_amt();
                                 });
                                 $('#Add').click(function() {
-                                    if ($.trim($('#date').val()).length == 0) {
-                                        alert("Please Enter Date");
-                                        return false;
-                                    }
                                     if ($.trim($('#billno').val()).length == 0) {
                                         alert("Please Enter Invoice No");
                                         return false;
