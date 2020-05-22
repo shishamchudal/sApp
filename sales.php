@@ -321,7 +321,7 @@ if ($_SESSION["User_type"] == "Admin") {
             } else {
 ?>
                 <script>
-                    alert("You are not allowed to delete it😡!");
+                    alert("You are not allowed to delete itЁЯШб!");
                     window.top.location = 'sales.php';
                 </script>
 <?php
@@ -334,8 +334,9 @@ if ($_SESSION["User_type"] == "Admin") {
 <html lang="en">
 
 <head>
-    <title>Sales's Register (बिक्री खाता)</title>
-    <meta charset="utf-8">
+    <meta charset="ibm866">
+    <title>Sales's Register (рдмрд┐рдХреНрд░реА рдЦрд╛рддрд╛)</title>
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
@@ -415,7 +416,7 @@ if ($_SESSION["User_type"] == "Admin") {
                     ?>
 
                         <div class="page-header">
-                            <h2>Add Sales's Record (बिक्री खाता)</h2>
+                            <h2>Add Sales's Record (рдмрд┐рдХреНрд░реА рдЦрд╛рддрд╛)</h2>
                         </div>
                         <p>Please fill this form and submit to add Sales record to the database.!</p>
                         <form id="Cheque_form" method="post">
@@ -561,7 +562,7 @@ if ($_SESSION["User_type"] == "Admin") {
                             if ($_SESSION["User_type"] == "Admin" or $row["Branch"] == $Branch) {
                         ?>
                                 <div class="page-header">
-                                    <h2>Update Sales Record (बिक्री खाता)</h2>
+                                    <h2>Update Sales Record (рдмрд┐рдХреНрд░реА рдЦрд╛рддрд╛)</h2>
                                 </div>
                                 <p>Please fill this form and submit to UpDate Sales record to the database.</p>
                                 <form id="Cheque_form" method="post">
@@ -687,7 +688,7 @@ if ($_SESSION["User_type"] == "Admin") {
                     } else {
                         ?>
                         <div class="page-header clearfix">
-                            <h2 class="pull-left">Sales's Register (बिक्री खाता)</h2>
+                            <h2 class="pull-left">Sales Register (рдмрд┐рдХреНрд░реА рдЦрд╛рддрд╛)</h2>
                             <a href="sales.php?add=1" class="btn btn-success pull-right">Add New Record</a><br><br>
                         </div>
                         <form method="post" id="filter_form">
@@ -707,6 +708,9 @@ if ($_SESSION["User_type"] == "Admin") {
                                     </td>
                                     <td>
                                         <input type="submit" name="filter" id="filter" value="Filter" class="btn btn-primary filter">
+                                    </td>
+                                    <td>
+                                        <input type="button" name="print" id="print" value="Print" class="btn btn-danger print" onclick="myFunction()">
                                     </td>
                                 </tr>
                             </table>
@@ -749,17 +753,86 @@ if ($_SESSION["User_type"] == "Admin") {
                                 </table>
                                 <br>
                             </center>
+                            <div id="Part1" style="display: none">
+                                <div class="page-header clearfix">
+                                    <center><h2 class="pull-left">Sales Register (рдмрд┐рдХреНрд░реА рдЦрд╛рддрд╛)</h2></center>
+                                </div><br>
+                                    <center>
+                                        <table>
+                                            <tr>
+                                                <th>
+                                                    <span>
+                                                        PAN No:
+                                                    </span>
+                                                </th>
+                                                <th>
+                                                    <input type="text" name="PAN" id="PAN" readonly class="form-control" style="text-align:center; color:blue;" value="<?php echo $result["PAN"]; ?>">
+                                                </th>
+                                            </tr>
+                                        </table>
+                                        <br>
+                                    </center>
+                                <table class='table table-bordered table-striped'>
+                                    <thead>
+                                        <tr style="text-align:center;">
+                                            <td>#</td>
+                                            <td>Date</td>
+                                            <td>Invoice No</td>
+                                            <td>Customer's Name</td>
+                                            <td>Customer's PAN No</td>
+                                            <td>Total Sales Amount</td>
+                                            <td>VAT Included Sales Amount</td>
+                                            <td>VAT Amount</td>
+                                            <td>Branch</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        if ($total_rows > 0) {
+                                            $sum = 0;
+                                            $sum1 = 0;
+                                            $sum2 = 0;
+                                            foreach ($all_result as $row) {
+                                                $sum = $sum + $row["Total_sales_amount"];
+                                                $sum1 = $sum1 + $row["VAT_included_sales_amount"];
+                                                $sum2 = $sum2 + $row["VAT_included_sales_VAT"];
+                                                echo '
+                                            <tr>
+                                                <td>' . $row["id"] . '</td>
+                                                <td style="white-space: nowrap;">' . $row['Date'] . '</td>
+                                                <td>' . $row['Bill_no'] . '</td>
+                                                <td>' . $row['Customers_name'] . '</td>
+                                                <td>' . $row['Customers_PAN_no'] . '</td>
+                                                <td>' . $row['Total_sales_amount'] . '</td>
+                                                <td>' . $row['VAT_included_sales_amount'] . '</td>
+                                                <td>' . $row['VAT_included_sales_VAT'] . '</td></div>
+                                                <td>' . $row['Name'] . '</td>
+                                            </tr>
+                                            ';
+                                            }
+                                        }
+                                        ?>
+                                    </tbody>
+                                    <tr>
+                                        <td colspan="5"><b>Grand Total Amount:</b></td>
+                                        <td colspan="1"><b><?php echo $sum; ?></b></td>
+                                        <td colspan="1"><b><?php echo $sum1; ?></b></td>
+                                        <td colspan="1"><b><?php echo $sum2; ?></b></td>
+                                        <td colspan="1"></td>
+                                    </tr>
+                                </table>
+                            </div>
                             <table id="data-table" class='table table-bordered table-striped'>
                                 <thead>
-                                    <tr>
+                                    <tr style="text-align:center;">
                                         <td>#</td>
                                         <td>Date</td>
                                         <td>Invoice No</td>
-                                        <td>Customer's name</td>
-                                        <td>Customer's PAN no</td>
-                                        <td>Total sales amount</td>
-                                        <td>VAT included sales amount</td>
-                                        <td>VAT amount</td>
+                                        <td>Customer's Name</td>
+                                        <td>Customer's PAN No</td>
+                                        <td>Total Sales Amount</td>
+                                        <td>VAT Included Sales Amount</td>
+                                        <td>VAT Amount</td>
                                         <td>Branch</td>
                                         <td>Edit</td>
                                         <td>Delete</td>
@@ -769,18 +842,22 @@ if ($_SESSION["User_type"] == "Admin") {
                                     <?php
                                     if ($total_rows > 0) {
                                         $sum = 0;
+                                        $sum1 = 0;
+                                        $sum2 = 0;
                                         foreach ($all_result as $row) {
                                             $sum = $sum + $row["Total_sales_amount"];
+                                            $sum1 = $sum1 + $row["VAT_included_sales_amount"];
+                                            $sum2 = $sum2 + $row["VAT_included_sales_VAT"];
                                             echo '
                                             <tr>
                                                 <td>' . $row["id"] . '</td>
-                                                <td>' . $row['Date'] . '</td>
+                                                <td style="white-space: nowrap;">' . $row['Date'] . '</td>
                                                 <td>' . $row['Bill_no'] . '</td>
                                                 <td>' . $row['Customers_name'] . '</td>
                                                 <td>' . $row['Customers_PAN_no'] . '</td>
                                                 <td>' . $row['Total_sales_amount'] . '</td>
                                                 <td>' . $row['VAT_included_sales_amount'] . '</td>
-                                                <td>' . $row['VAT_included_sales_VAT'] . '</td>
+                                                <td>' . $row['VAT_included_sales_VAT'] . '</td></div>
                                                 <td>' . $row['Name'] . '</td>
                                                 <td><a href="sales.php?update=1&id=' . $row["id"] . '">Edit</a></td>
                                                 <td><a href="sales.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
@@ -793,21 +870,51 @@ if ($_SESSION["User_type"] == "Admin") {
                                 <tr>
                                     <td colspan="5"><b>Grand Total Amount:</b></td>
                                     <td colspan="1"><b><?php echo $sum; ?></b></td>
-                                    <td colspan="6"></td>
+                                    <td colspan="1"><b><?php echo $sum1; ?></b></td>
+                                    <td colspan="1"><b><?php echo $sum2; ?></b></td>
+                                    <td colspan="3"></td>
                                 </tr>
                             </table>
+
+                        <?php } ?>
                         </div>
-                    <?php } ?>
                 </div>
+                <?php include("includes/footer.php"); ?>
             </div>
-            <?php include("includes/footer.php"); ?>
         </div>
-    </div>
 </body>
 
 </html>
+<script type="text/javascript" src="printThis/printThis.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+        $('#print').click(function() {
+            x = $('#Part1');
+            x.show();
+            x.printThis({
+                debug: false, // show the iframe for debugging
+                importCSS: true, // import parent page css
+                importStyle: false, // import style tags
+                printContainer: true, // print outer container/$.selector
+                loadCSS: "", // path to additional css file - use an array [] for multiple
+                pageTitle: "", // add title to print page
+                removeInline: false, // remove inline styles from print elements
+                removeInlineSelector: "*", // custom selectors to filter inline styles. removeInline must be true
+                printDelay: 333, // variable print delay
+                header: null, // prefix to html
+                footer: null, // postfix to html
+                base: false, // preserve the BASE tag or accept a string for the URL
+                formValues: true, // preserve input/form values
+                canvas: false, // copy canvas content
+                doctypeString: '<!DOCTYPE html>', // enter a different doctype for older markup
+                removeScripts: false, // remove script tags from print content
+                copyTagClasses: false, // copy classes from the html & body tag
+                beforePrintEvent: null, // callback function for printEvent in iframe
+                beforePrint: null, // function called before iframe is filled
+                afterPrint: null // function called before iframe is removed
+            });
+            x.fadeOut(3000);
+        })
         $('#Name').chosen();
         $('#data-table').DataTable();
         $('#StartDate').datepicker({

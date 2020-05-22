@@ -5,9 +5,24 @@
           <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
             <i class="fa fa-bars"></i>
           </button>
-
+                            <?php
+                            $statement = $connect->prepare("
+                            SELECT * FROM Branch  
+                                WHERE id = :id
+                                LIMIT 1
+                            ");
+                            $statement->execute(
+                                array(
+                                    ':id'       =>  $_SESSION["Linked_branch"]
+                                )
+                            );
+                            $result = $statement->fetch();
+                            ?>
           <?php include("search.php"); ?>
-
+            <div style="white-space: nowrap; text-align:center;"><b>Online Outlet Management System</b>
+            <br>
+            (<?php echo $result["Address"]; ?> Branch)
+            </div>
           <!-- Topbar Navbar -->
           <ul class="navbar-nav ml-auto">
 
