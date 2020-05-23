@@ -885,7 +885,7 @@ if ($_SESSION["User_type"] == "Admin") {
 </body>
 
 </html>
-<script type="text/javascript" src="printThis/printThis.js"></script>
+<script type="text/javascript" src="printThis.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
         $('#print').click(function() {
