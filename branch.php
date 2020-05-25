@@ -87,7 +87,7 @@ JOIN accounts ON Branch.Linked_account = accounts.id
         } catch (Exception $e) {
             echo 'Caught exception: ',  $e->getMessage(), "\n";
         }
-        header("location:Branch.php");
+        header("location:branch.php");
     }
     if (isset($_GET["update"])) {
         if (isset($_POST["Update"])) {
@@ -111,7 +111,7 @@ WHERE
                 )
             );
             echo "Values updated sucessfully!";
-            header("location:Branch.php");
+            header("location:branch.php");
         }
     }
     if (isset($_GET["delete"]) && isset($_GET["id"])) {
@@ -123,7 +123,7 @@ WHERE
                 ':id'       =>      $_GET["id"]
             )
         );
-        header("location:Branch.php");
+        header("location:branch.php");
     }
 } else {
     echo '
@@ -296,7 +296,7 @@ WHERE
                                 <tr>
                                     <td colspan="2">
                                         <input type="submit" id="Add" class="btn btn-primary" value="Add" name="Add">
-                                        <a href="Branch.php" class="btn btn-default">Cancel</a>
+                                        <a href="branch.php" class="btn btn-default">Cancel</a>
                                     </td>
                                 </tr>
                             </table>
@@ -360,7 +360,7 @@ WHERE
                                     <tr>
                                         <td colspan="2">
                                             <input type="submit" id="Update" class="btn btn-primary" value="Update" name="Update">
-                                            <a href="Branch.php" class="btn btn-default">Cancel</a>
+                                            <a href="branch.php" class="btn btn-default">Cancel</a>
                                         </td>
                                     </tr>
                                 </table>
@@ -382,7 +382,7 @@ WHERE
                         ?>
                         <div class="page-header clearfix">
                             <h2 class="pull-left">Branch's List</h2>
-                            <a href="Branch.php?add=1" class="btn btn-success pull-right">Add New Record</a><br><br>
+                            <a href="branch.php?add=1" class="btn btn-success pull-right">Add New Record</a><br><br>
                         </div>
                         <div id="Ratelist" class="table-responsive">
                             <table id="data-table" class='table table-bordered table-striped'>
