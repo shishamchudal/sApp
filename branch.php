@@ -222,7 +222,7 @@ WHERE
                         <div class="page-header">
                             <h2>Add Records</h2>
                         </div>
-                        <p>Please fill this form and submit to add Sales record to the database.!</p>
+                        <p>Please fill this form and submit to add Branch record to the database.!</p>
                         <form id="Cheque_form" method="post">
                             <table id="data-table" class='table table-bordered table-striped'>
                                 <tr>
@@ -328,9 +328,9 @@ WHERE
                         foreach ($result as $row) {
                         ?>
                             <div class="page-header">
-                                <h2>UpDate Sales</h2>
+                                <h2>UpDate Branch</h2>
                             </div>
-                            <p>Please fill this form and submit to UpDate Sales record to the database.</p>
+                            <p>Please fill this form and submit to UpDate Branch record to the database.</p>
                             <form id="Cheque_form" method="post">
                                 <table id="data-table" class='table table-bordered table-striped'>
                                     <tr>
