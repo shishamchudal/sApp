@@ -1,8 +1,8 @@
-
 <?php 
 
 include 'includes/header.php'; 
 include('database_connection.php');
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -46,7 +46,11 @@ include('database_connection.php');
 
 // We need to use sessions, so you should always start sessions using the below code.
 
-
+// If the user is not logged in redirect to the login page...
+if (!isset($_SESSION['loggedin'])) {
+	echo "<script type='text/javascript'>window.top.location='index.php';</script>"; exit;
+exit();
+}
 include 'cred_account.php';
 $con = mysqli_connect($DATABASE_HOST, $DATABASE_USER, $DATABASE_PASS, $DATABASE_NAME);
 if (mysqli_connect_errno()) {
