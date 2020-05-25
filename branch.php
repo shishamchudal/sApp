@@ -414,8 +414,8 @@ WHERE
                                                 <td>' . $row['PAN'] . '</td>
                                                 <td>' . $row['Branch_type'] . '</td>
                                                 <td>' . $row['username'] . '</td>
-                                                <td><a href="Branch.php?update=1&id=' . $row["id"] . '">Edit</a></td>
-                                                <td><a href="Branch.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
+                                                <td><a href="branch.php?update=1&id=' . $row["id"] . '">Edit</a></td>
+                                                <td><a href="branch.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
                                             </tr>
                                             ';
                                         }
