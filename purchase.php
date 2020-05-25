@@ -336,9 +336,8 @@ WHERE Purchase_Ledger.Branch = :Branch
 <html lang="en">
 
 <head>
-    <meta charset="windows-1252">
     <title>Purchase's Register (à¤–à¤°à¤¿à¤¦ à¤–à¤¾à¤¤à¤¾)</title>
-
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">

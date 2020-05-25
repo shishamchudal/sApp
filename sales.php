@@ -334,7 +334,7 @@ if ($_SESSION["User_type"] == "Admin") {
 <html lang="en">
 
 <head>
-    <meta charset="ibm866">
+    <meta charset="utf-8">
     <title>Sales's Register (рдмрд┐рдХреНрд░реА рдЦрд╛рддрд╛)</title>
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
