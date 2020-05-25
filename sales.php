@@ -825,7 +825,7 @@ if ($_SESSION["User_type"] == "Admin") {
                             <table id="data-table" class='table table-bordered table-striped'>
                                 <thead>
                                     <tr style="text-align:center;">
-                                        <td>#</td>
+                                        <td>S_ID</td>
                                         <td>Date</td>
                                         <td>Invoice No</td>
                                         <td>Customer's Name</td>
