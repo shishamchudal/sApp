@@ -1,4 +1,9 @@
-<?php include 'includes/header.php'; ?>
+<?php 
+
+include 'includes/header.php'; 
+include('database_connection.php');
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
