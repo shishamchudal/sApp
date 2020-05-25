@@ -335,7 +335,7 @@ if ($_SESSION["User_type"] == "Admin") {
 
 <head>
     <meta charset="utf-8">
-    <title>Sales's Register (рдмрд┐рдХреНрд░реА рдЦрд╛рддрд╛)</title>
+    <title>Sales's Register (बिक्री खाता)</title>
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -416,7 +416,7 @@ if ($_SESSION["User_type"] == "Admin") {
                     ?>
 
                         <div class="page-header">
-                            <h2>Add Sales's Record (рдмрд┐рдХреНрд░реА рдЦрд╛рддрд╛)</h2>
+                            <h2>Add Sales's Record (बिक्री खाता)</h2>
                         </div>
                         <p>Please fill this form and submit to add Sales record to the database.!</p>
                         <form id="Cheque_form" method="post">
@@ -562,7 +562,7 @@ if ($_SESSION["User_type"] == "Admin") {
                             if ($_SESSION["User_type"] == "Admin" or $row["Branch"] == $Branch) {
                         ?>
                                 <div class="page-header">
-                                    <h2>Update Sales Record (рдмрд┐рдХреНрд░реА рдЦрд╛рддрд╛)</h2>
+                                    <h2>Update Sales Record (बिक्री खाता)</h2>
                                 </div>
                                 <p>Please fill this form and submit to UpDate Sales record to the database.</p>
                                 <form id="Cheque_form" method="post">
@@ -688,7 +688,7 @@ if ($_SESSION["User_type"] == "Admin") {
                     } else {
                         ?>
                         <div class="page-header clearfix">
-                            <h2 class="pull-left">Sales Register (рдмрд┐рдХреНрд░реА рдЦрд╛рддрд╛)</h2>
+                            <h2 class="pull-left">Sales Register (बिक्री खाता)</h2>
                             <a href="sales.php?add=1" class="btn btn-success pull-right">Add New Record</a><br><br>
                         </div>
                         <form method="post" id="filter_form">
@@ -755,7 +755,7 @@ if ($_SESSION["User_type"] == "Admin") {
                             </center>
                             <div id="Part1" style="display: none">
                                 <div class="page-header clearfix">
-                                    <center><h2 class="pull-left">Sales Register (рдмрд┐рдХреНрд░реА рдЦрд╛рддрд╛)</h2></center>
+                                    <center><h2 class="pull-left">Sales Register (बिक्री खाता)</h2></center>
                                 </div><br>
                                     <center>
                                         <table>

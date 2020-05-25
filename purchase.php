@@ -336,7 +336,7 @@ WHERE Purchase_Ledger.Branch = :Branch
 <html lang="en">
 
 <head>
-    <title>Purchase's Register (à¤–à¤°à¤¿à¤¦ à¤–à¤¾à¤¤à¤¾)</title>
+    <title>Purchase's Register (खरिद खाता)</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -417,7 +417,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                     ?>
 
                         <div class="page-header">
-                            <h2>Add Purchase Record (à¤–à¤°à¤¿à¤¦ à¤–à¤¾à¤¤à¤¾)</h2>
+                            <h2>Add Purchase Record (खरिद खाता)</h2>
                         </div>
                         <p>Please fill this form and submit to add purchase record to the database.!</p>
                         <form id="Cheque_form" method="post">
@@ -559,7 +559,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                             if ($_SESSION["User_type"] == "Admin" or $row["Branch"] == $Branch) {
                         ?>
                                 <div class="page-header">
-                                    <h2>Update Purchase Record (à¤–à¤°à¤¿à¤¦ à¤–à¤¾à¤¤à¤¾)</h2>
+                                    <h2>Update Purchase Record (खरिद खाता)</h2>
                                 </div>
                                 <p>Please fill this form and submit to UpDate purchase record to the database.</p>
                                 <form id="Cheque_form" method="post">
@@ -685,7 +685,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                     } else {
                         ?>
                         <div class="page-header clearfix">
-                            <h2 class="pull-left">Purchase Register (à¤–à¤°à¤¿à¤¦ à¤–à¤¾à¤¤à¤¾)</h2>
+                            <h2 class="pull-left">Purchase Register (खरिद खाता)</h2>
                             <a href="purchase.php?add=1" class="btn btn-success pull-right">Add New Record</a><br><br>
                         </div>
                         <form method="post" id="filter_form">
@@ -754,7 +754,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                 <div id="Part1" style="display: none">
                                     <div class="page-header clearfix">
                                         <center>
-                                            <h2 class="pull-left">Purchase Register (à¤–à¤°à¤¿à¤¦ à¤–à¤¾à¤¤à¤¾)</h2>
+                                            <h2 class="pull-left">Purchase Register (खरिद खाता)</h2>
                                         </center>
                                     </div><br>
                                     <center>
