@@ -477,6 +477,21 @@ if ($_SESSION["User_type"] == "Admin") {
                                         <input type="number" name="VAT_included_sales_VAT" id="vat_amount" required class="form-control vat_amount" readonly>
                                     </td>
                                 </tr>
+                                <?php
+                                if ($_SESSION["User_type"] == "Admin") {
+                                ?>
+                                    <tr>
+                                        <th>
+                                            <label for="phone">Branch</label>
+                                        </th>
+                                        <td>
+                                            <select name="Branch" id="Branch" required class="form-control Branch">
+                                                <option>Select Branch</option>
+                                                <?php echo LoadBranch($connect); ?>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
                                 <tr>
                                     <td colspan="2">
                                         <input type="submit" id="Add" class="btn btn-primary" value="Add" name="Add">
@@ -748,23 +763,25 @@ if ($_SESSION["User_type"] == "Admin") {
                             </center>
                             <div id="Part1" style="display: none">
                                 <div class="page-header clearfix">
-                                    <center><h2 class="pull-left">Sales Register (बिक्री खाता)</h2></center>
-                                </div><br>
                                     <center>
-                                        <table>
-                                            <tr>
-                                                <th>
-                                                    <span>
-                                                        PAN No:
-                                                    </span>
-                                                </th>
-                                                <th>
-                                                    <input type="text" name="PAN" id="PAN" readonly class="form-control" style="text-align:center; color:blue;" value="<?php echo $result["PAN"]; ?>">
-                                                </th>
-                                            </tr>
-                                        </table>
-                                        <br>
+                                        <h2 class="pull-left">Sales Register (बिक्री खाता)</h2>
                                     </center>
+                                </div><br>
+                                <center>
+                                    <table>
+                                        <tr>
+                                            <th>
+                                                <span>
+                                                    PAN No:
+                                                </span>
+                                            </th>
+                                            <th>
+                                                <input type="text" name="PAN" id="PAN" readonly class="form-control" style="text-align:center; color:blue;" value="<?php echo $result["PAN"]; ?>">
+                                            </th>
+                                        </tr>
+                                    </table>
+                                    <br>
+                                </center>
                                 <table class='table table-bordered table-striped'>
                                     <thead>
                                         <tr style="text-align:center;">
