@@ -29,6 +29,24 @@
           <i class="fas fa-fw fa-table"></i>
           <span>Purchase</span></a>
       </li>
+
+
+   <!-- Nav Item - Tables -->
+   <li class="nav-item">
+     <a class="nav-link" href="accounts.php">
+     <i class="fas fa-users"></i>
+       <span>Account's List</span></a>
+   </li>
+
+
+   <!-- Nav Item - Charts -->
+   <li class="nav-item">
+     <a class="nav-link" href="Ledger.php">
+     <i class="fas fa-book"></i>
+       <span>Ledger</span></a>
+   </li>
+
+   
 <?php
 include_once 'header.php';
 if ($_SESSION["User_type"] == "Admin") {

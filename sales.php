@@ -1,4 +1,5 @@
 <?php
+$Account_type = "Customer";
 include 'includes/header.php';
 include('functions.php');
 include('database_connection.php');
@@ -8,16 +9,16 @@ if ($_SESSION["User_type"] == "Admin") {
     Sales_Ledger.id,
     Sales_Ledger.Date,
     Sales_Ledger.Bill_no,
-    Sales_Ledger.Customers_name,
+    accounts_info.Name,
     Sales_Ledger.Customers_PAN_no,
     Sales_Ledger.Total_sales_amount,
     Sales_Ledger.VAT_included_sales_amount,
     Sales_Ledger.VAT_included_sales_VAT,
-    Branch.Name
+    Branch.Branch_Name
     FROM
     Sales_Ledger
     JOIN Branch ON Sales_Ledger.Branch = Branch.id
-        order by Date
+    JOIN accounts_info ON Sales_Ledger.Customers_name = accounts_info.id
     ");
 
     $statement->execute();
@@ -28,19 +29,20 @@ if ($_SESSION["User_type"] == "Admin") {
 
     if (isset($_POST['filter'])) {
         $statement = $connect->prepare("
-    SELECT
-    Sales_Ledger.id,
-    Sales_Ledger.Date,
-    Sales_Ledger.Bill_no,
-    Sales_Ledger.Customers_name,
-    Sales_Ledger.Customers_PAN_no,
-    Sales_Ledger.Total_sales_amount,
-    Sales_Ledger.VAT_included_sales_amount,
-    Sales_Ledger.VAT_included_sales_VAT,
-    Branch.Name
-    FROM
-    Sales_Ledger
-    JOIN Branch ON Sales_Ledger.Branch = Branch.id
+        SELECT
+        Sales_Ledger.id,
+        Sales_Ledger.Date,
+        Sales_Ledger.Bill_no,
+        accounts_info.Name,
+        Sales_Ledger.Customers_PAN_no,
+        Sales_Ledger.Total_sales_amount,
+        Sales_Ledger.VAT_included_sales_amount,
+        Sales_Ledger.VAT_included_sales_VAT,
+        Branch.Branch_Name
+        FROM
+        Sales_Ledger
+        JOIN Branch ON Sales_Ledger.Branch = Branch.id
+        JOIN accounts_info ON Sales_Ledger.Customers_name = accounts_info.id
     WHERE Date Between :startDate AND :endDate order by Date;
     ");
 
@@ -106,7 +108,8 @@ if ($_SESSION["User_type"] == "Admin") {
         } catch (Exception $e) {
             echo 'Caught exception: ',  $e->getMessage(), "\n";
         }
-        header("location:sales.php");
+        echo "<script type='text/javascript'>window.top.location='sales.php';</script>";
+        exit;
     }
     if (isset($_GET["update"])) {
         if (isset($_POST["Update"])) {
@@ -156,17 +159,16 @@ if ($_SESSION["User_type"] == "Admin") {
     Sales_Ledger.id,
     Sales_Ledger.Date,
     Sales_Ledger.Bill_no,
-    Sales_Ledger.Customers_name,
+    accounts_info.Name,
     Sales_Ledger.Customers_PAN_no,
     Sales_Ledger.Total_sales_amount,
     Sales_Ledger.VAT_included_sales_amount,
     Sales_Ledger.VAT_included_sales_VAT,
-    Branch.Name
+    Branch.Branch_Name
     FROM
     Sales_Ledger
     JOIN Branch ON Sales_Ledger.Branch = Branch.id
-    WHERE Sales_Ledger.Branch = :Branch
-        order by Date
+    JOIN accounts_info ON Sales_Ledger.Customers_name = accounts_info.id
     ");
 
     $statement->execute(
@@ -181,19 +183,20 @@ if ($_SESSION["User_type"] == "Admin") {
 
     if (isset($_POST['filter'])) {
         $statement = $connect->prepare("
-    SELECT
-    Sales_Ledger.id,
-    Sales_Ledger.Date,
-    Sales_Ledger.Bill_no,
-    Sales_Ledger.Customers_name,
-    Sales_Ledger.Customers_PAN_no,
-    Sales_Ledger.Total_sales_amount,
-    Sales_Ledger.VAT_included_sales_amount,
-    Sales_Ledger.VAT_included_sales_VAT,
-    Branch.Name
-    FROM
-    Sales_Ledger
-    JOIN Branch ON Sales_Ledger.Branch = Branch.id
+        SELECT
+        Sales_Ledger.id,
+        Sales_Ledger.Date,
+        Sales_Ledger.Bill_no,
+        accounts_info.Name,
+        Sales_Ledger.Customers_PAN_no,
+        Sales_Ledger.Total_sales_amount,
+        Sales_Ledger.VAT_included_sales_amount,
+        Sales_Ledger.VAT_included_sales_VAT,
+        Branch.Branch_Name
+        FROM
+        Sales_Ledger
+        JOIN Branch ON Sales_Ledger.Branch = Branch.id
+        JOIN accounts_info ON Sales_Ledger.Customers_name = accounts_info.id
     WHERE Date Between :startDate AND :endDate 
     AND Sales_Ledger.Branch = :Branch
     order by Date;
@@ -262,7 +265,8 @@ if ($_SESSION["User_type"] == "Admin") {
         } catch (Exception $e) {
             echo 'Caught exception: ',  $e->getMessage(), "\n";
         }
-        header("location:sales.php");
+        echo "<script type='text/javascript'>window.top.location='sales.php';</script>";
+        exit;
     }
     if (isset($_GET["update"])) {
         if (isset($_POST["Update"])) {
@@ -333,10 +337,9 @@ if ($_SESSION["User_type"] == "Admin") {
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="utf-8">
+<head>    
     <title>Sales's Register (बिक्री खाता)</title>
-
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
@@ -426,7 +429,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                         <label for="name">Date</label>
                                     </th>
                                     <td>
-                                        <input type="date" name="Date" id="date" required class="form-control">
+                                        <input type="date" name="Date" id="date" required class="form-control" tabindex="1">
                                     </td>
                                 </tr>
                                 <tr>
@@ -434,7 +437,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                         <label for="panno">Invoice No</label>
                                     </th>
                                     <td>
-                                        <input type="number" name="Bill_no" id="billno" class="form-control" required>
+                                        <input type="number" name="Bill_no" id="billno" class="form-control" tabindex="2" required>
                                     </td>
                                 </tr>
                                 <tr>
@@ -442,7 +445,31 @@ if ($_SESSION["User_type"] == "Admin") {
                                         <label for="phone">Customer's Name</label>
                                     </th>
                                     <td>
-                                        <input type="text" name="Customers_name" id="Customersname" required class="form-control">
+                                        <select name="Customers_name" id="Customersname" required class="form-control Customers_name" tabindex="3">
+                                            <option>Select a Customer</option>
+                                            <?php
+                                            $statement = $connect->prepare("
+                                            SELECT * FROM accounts_info
+                                            WHERE Account_type = :Account_type
+                                        ");
+                                            $statement->execute(
+                                                array(
+                                                    ':Account_type' => $Account_type
+                                                )
+                                            );
+
+                                            $all_result = $statement->fetchAll();
+
+                                            $total_rows = $statement->rowCount();
+
+                                            foreach ($all_result as $row) {
+                                                echo '
+                                        <option value="' . $row["id"] . '">' . $row["Name"] . '</option>
+                                        ';
+                                            }
+
+                                            ?>
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
@@ -450,9 +477,26 @@ if ($_SESSION["User_type"] == "Admin") {
                                         <label for="phone">Customer's PAN No</label>
                                     </th>
                                     <td>
-                                        <input type="number" name="Customers_PAN_no" id="Customerspanno" required class="form-control">
+                                        <div id="item_sub_category"><input type="number" name="Customers_PAN_no" id="Customerspanno" required class="form-control" readonly></div>
                                     </td>
                                 </tr>
+                                <script>
+                                    $(document).on('change', '.Customers_name', function() {
+                                        var category_id = $(this).val();
+                                        $.ajax({
+                                            url: "fill_pan_no.php",
+                                            method: "POST",
+                                            data: {
+                                                category_id: category_id
+                                            },
+                                            success: function(data) {
+                                                var html = '';
+                                                html += data;
+                                                $('#item_sub_category').html(html);
+                                            }
+                                        })
+                                    });
+                                </script>
                                 <tr>
                                     <th>
                                         <label for="phone">Total Sales Amount</label>
@@ -466,7 +510,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                         <label for="phone">Sales Amount</label>
                                     </th>
                                     <td>
-                                        <input type="number" name="VAT_included_sales_amount" id="sales_amount" required class="form-control sales_amount">
+                                        <input type="number" name="VAT_included_sales_amount" id="sales_amount" required class="form-control sales_amount" tabindex="4">
                                     </td>
                                 </tr>
                                 <tr>
@@ -485,7 +529,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                             <label for="phone">Branch</label>
                                         </th>
                                         <td>
-                                            <select name="Branch" id="Branch" required class="form-control Branch">
+                                            <select name="Branch" id="Branch" required class="form-control Branch" tabindex="5">
                                                 <option>Select Branch</option>
                                                 <?php echo LoadBranch($connect); ?>
                                             </select>
@@ -596,7 +640,37 @@ if ($_SESSION["User_type"] == "Admin") {
                                                 <label for="phone">Customer's Name</label>
                                             </th>
                                             <td>
-                                                <input type="text" name="Customers_name" id="Customersname" value="<?php echo $row["Customers_name"]; ?>" required class="form-control">
+                                                <select name="Customers_name" id="Customersname" required class="form-control Customers_name" tabindex="3">
+                                                    <?php
+                                                    $statement = $connect->prepare("
+                                                        SELECT * FROM accounts_info
+                                                        WHERE Account_type = :Account_type
+                                                    ");
+                                                    $statement->execute(
+                                                        array(
+                                                            ':Account_type' => $Account_type
+                                                        )
+                                                    );
+
+                                                    $all_result = $statement->fetchAll();
+
+                                                    $total_rows = $statement->rowCount();
+
+                                                    foreach ($all_result as $row1) {
+                                                        echo $row["id"] . "<br>" . $row["Customers_name"];
+                                                        if ($row1["id"] == $row["Customers_name"]) {
+                                                            echo '
+                                                            <option value="' . $row1["id"] . '" selected>' . $row1["Name"] . '</option>
+                                                            ';
+                                                        } else {
+                                                            echo '
+                                                            <option value="' . $row1["id"] . '">' . $row1["Name"] . '</option>
+                                                            ';
+                                                        }
+                                                    }
+
+                                                    ?>
+                                                </select>
                                             </td>
                                         </tr>
                                         <tr>
@@ -604,9 +678,26 @@ if ($_SESSION["User_type"] == "Admin") {
                                                 <label for="phone">Customer's PAN No</label>
                                             </th>
                                             <td>
-                                                <input type="number" name="Customers_PAN_no" id="Customerspanno" value="<?php echo $row["Customers_PAN_no"]; ?>" required class="form-control">
+                                                <div id="item_sub_category"><input type="number" name="Customers_PAN_no" id="Customerspanno" required class="form-control" value="<?php echo $row["Customers_PAN_no"]; ?>" readonly></div>
                                             </td>
                                         </tr>
+                                        <script>
+                                            $(document).on('change', '.Customers_name', function() {
+                                                var category_id = $(this).val();
+                                                $.ajax({
+                                                    url: "fill_pan_no.php",
+                                                    method: "POST",
+                                                    data: {
+                                                        category_id: category_id
+                                                    },
+                                                    success: function(data) {
+                                                        var html = '';
+                                                        html += data;
+                                                        $('#item_sub_category').html(html);
+                                                    }
+                                                })
+                                            });
+                                        </script>
                                         <tr>
                                             <th>
                                                 <label for="phone">Total Sales Amount</label>
@@ -785,8 +876,8 @@ if ($_SESSION["User_type"] == "Admin") {
                                 <table class='table table-bordered table-striped'>
                                     <thead>
                                         <tr style="text-align:center;">
-                                            <td>#</td>
-                                            <td>Date</td>
+                                            <td>S_ID</td>
+                                            <td style="white-space: nowrap;">Date</td>
                                             <td>Invoice No</td>
                                             <td>Customer's Name</td>
                                             <td>Customer's PAN No</td>
@@ -811,12 +902,12 @@ if ($_SESSION["User_type"] == "Admin") {
                                                 <td>' . $row["id"] . '</td>
                                                 <td style="white-space: nowrap;">' . $row['Date'] . '</td>
                                                 <td>' . $row['Bill_no'] . '</td>
-                                                <td>' . $row['Customers_name'] . '</td>
+                                                <td>' . $row['Name'] . '</td>
                                                 <td>' . $row['Customers_PAN_no'] . '</td>
                                                 <td>' . $row['Total_sales_amount'] . '</td>
                                                 <td>' . $row['VAT_included_sales_amount'] . '</td>
                                                 <td>' . $row['VAT_included_sales_VAT'] . '</td></div>
-                                                <td>' . $row['Name'] . '</td>
+                                                <td>' . $row['Branch_Name'] . '</td>
                                             </tr>
                                             ';
                                             }
@@ -836,7 +927,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                 <thead>
                                     <tr style="text-align:center;">
                                         <td>S_ID</td>
-                                        <td>Date</td>
+                                        <td style="white-space: nowrap;">>Date</td>
                                         <td>Invoice No</td>
                                         <td>Customer's Name</td>
                                         <td>Customer's PAN No</td>
@@ -863,12 +954,12 @@ if ($_SESSION["User_type"] == "Admin") {
                                                 <td>' . $row["id"] . '</td>
                                                 <td style="white-space: nowrap;">' . $row['Date'] . '</td>
                                                 <td>' . $row['Bill_no'] . '</td>
-                                                <td>' . $row['Customers_name'] . '</td>
+                                                <td>' . $row['Name'] . '</td>
                                                 <td>' . $row['Customers_PAN_no'] . '</td>
                                                 <td>' . $row['Total_sales_amount'] . '</td>
                                                 <td>' . $row['VAT_included_sales_amount'] . '</td>
                                                 <td>' . $row['VAT_included_sales_VAT'] . '</td></div>
-                                                <td>' . $row['Name'] . '</td>
+                                                <td>' . $row['Branch_Name'] . '</td>
                                                 <td><a href="sales.php?update=1&id=' . $row["id"] . '">Edit</a></td>
                                                 <td><a href="sales.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
                                             </tr>

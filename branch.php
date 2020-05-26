@@ -7,7 +7,7 @@ if ($_SESSION["User_type"] == "Admin") {
     $statement = $connect->prepare("
 SELECT
 Branch.id,
-Branch.Name,
+Branch.Branch_Name,
 Branch.Address,
 Branch.Phone,
 Branch.PAN,
@@ -39,7 +39,7 @@ JOIN accounts ON Branch.Linked_account = accounts.id
                     "<hr>";
             $statement = $connect->prepare("
         INSERT INTO `Branch`(
-            `Name`,
+            `Branch_Name`,
             `Address`,
             `Phone`,
             `PAN`,
@@ -96,7 +96,7 @@ JOIN accounts ON Branch.Linked_account = accounts.id
         UPDATE
     `Branch`
 SET
-    `Name` = :Name,
+    `Branch_Name` = :Name,
     `Address` = :Address,
     `Phone` = :Phone
 WHERE
@@ -264,7 +264,7 @@ WHERE
                                     <td>
                                         <select name="Branch_type" id="Branch" required class="form-control Branch">
                                             <option value="Main Branch">Main Branch</option>
-                                            <option value="Sub Branch">Sub Branch</option>
+                                            <option value="Sub Branch" selected>Sub Branch</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -408,7 +408,7 @@ WHERE
                                             echo '
                                             <tr>
                                                 <td>' . $row["id"] . '</td>
-                                                <td>' . $row['Name'] . '</td>
+                                                <td>' . $row['Branch_Name'] . '</td>
                                                 <td>' . $row['Address'] . '</td>
                                                 <td>' . $row['Phone'] . '</td>
                                                 <td>' . $row['PAN'] . '</td>

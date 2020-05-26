@@ -46,8 +46,56 @@ function LoadBranch($connect)
 	$output = '';
 
 	foreach ($result as $row) {
-		$output .= '<option value="' . $row["id"] . '">' . $row["Name"] ." (" . $row["Address"] . ")" . '</option>';
+		$output .= '<option value="' . $row["id"] . '">' . $row["Branch_Name"] ." (" . $row["Address"] . ")" . '</option>';
 	}
 
 	return $output;
+}
+function fill_pan_no($connect, $id)
+{
+   $query = "
+  SELECT * FROM accounts_info 
+  WHERE id = '" . $id . "'
+ ";
+
+   $statement = $connect->prepare($query);
+
+   $statement->execute();
+
+   $result = $statement->fetchAll();
+
+   $total_rows = $statement->rowCount();
+
+   $output = '';
+
+   foreach ($result as $row) {
+      $output .= '<input type="number" name="Customers_PAN_no" id="Customerspanno" class="form-control" value="' . $row["PAN_No"] . '" readonly/>';
+      //$output.= '<input type="text" value="'.$row["Rate"].'" placeholder="Rate" readonly class="form-control item_name">';
+   }
+
+   return $output;
+}
+function fill_pan_no_purchase($connect, $id)
+{
+   $query = "
+  SELECT * FROM accounts_info 
+  WHERE id = '" . $id . "'
+ ";
+
+   $statement = $connect->prepare($query);
+
+   $statement->execute();
+
+   $result = $statement->fetchAll();
+
+   $total_rows = $statement->rowCount();
+
+   $output = '';
+
+   foreach ($result as $row) {
+      $output .= '<input type="number" name="Sellers_PAN_no" id="Customerspanno" class="form-control" value="' . $row["PAN_No"] . '" readonly/>';
+      //$output.= '<input type="text" value="'.$row["Rate"].'" placeholder="Rate" readonly class="form-control item_name">';
+   }
+
+   return $output;
 }

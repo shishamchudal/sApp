@@ -1,24 +1,25 @@
 <?php
+$Account_type = "Vendor";
 include 'includes/header.php';
 include('functions.php');
 include('database_connection.php');
 if ($_SESSION["User_type"] == "Admin") {
     $statement = $connect->prepare("
-SELECT
-Purchase_Ledger.id,
-Purchase_Ledger.Date,
-Purchase_Ledger.Bill_no,
-Purchase_Ledger.Sellers_name,
-Purchase_Ledger.Sellers_PAN_no,
-Purchase_Ledger.Total_Purchase_Amount,
-Purchase_Ledger.VAT_included_purchase_amount,
-Purchase_Ledger.VAT_included_purchase_VAT_amount,
-Branch.Name
-FROM
-Purchase_Ledger
-JOIN Branch ON Purchase_Ledger.Branch = Branch.id
-    order by Date
-");
+        SELECT
+        Purchase_Ledger.id,
+        Purchase_Ledger.Date,
+        Purchase_Ledger.Bill_no,
+        accounts_info.Name,
+        Purchase_Ledger.Sellers_PAN_no,
+        Purchase_Ledger.Total_Purchase_Amount,
+        Purchase_Ledger.VAT_included_purchase_amount,
+        Purchase_Ledger.VAT_included_purchase_VAT_amount,
+        Branch.Branch_Name
+    FROM
+        Purchase_Ledger
+    JOIN Branch ON Purchase_Ledger.Branch = Branch.id
+    JOIN accounts_info ON Purchase_Ledger.Sellers_name = accounts_info.id
+    ");
 
     $statement->execute();
 
@@ -28,21 +29,22 @@ JOIN Branch ON Purchase_Ledger.Branch = Branch.id
 
     if (isset($_POST['filter'])) {
         $statement = $connect->prepare("
-    SELECT
-    Purchase_Ledger.id,
-    Purchase_Ledger.Date,
-    Purchase_Ledger.Bill_no,
-    Purchase_Ledger.Sellers_name,
-    Purchase_Ledger.Sellers_PAN_no,
-    Purchase_Ledger.Total_Purchase_Amount,
-    Purchase_Ledger.VAT_included_purchase_amount,
-    Purchase_Ledger.VAT_included_purchase_VAT_amount,
-    Branch.Name
-    FROM
-    Purchase_Ledger
-    JOIN Branch ON Purchase_Ledger.Branch = Branch.id
-    WHERE Date Between :startDate AND :endDate order by Date;
-    ");
+            SELECT
+            Purchase_Ledger.id,
+            Purchase_Ledger.Date,
+            Purchase_Ledger.Bill_no,
+            accounts_info.Name,
+            Purchase_Ledger.Sellers_PAN_no,
+            Purchase_Ledger.Total_Purchase_Amount,
+            Purchase_Ledger.VAT_included_purchase_amount,
+            Purchase_Ledger.VAT_included_purchase_VAT_amount,
+            Branch.Branch_Name
+        FROM
+            Purchase_Ledger
+        JOIN Branch ON Purchase_Ledger.Branch = Branch.id
+        JOIN accounts_info ON Purchase_Ledger.Sellers_name = accounts_info.id
+            WHERE Date Between :startDate AND :endDate order by Date;
+        ");
 
         $statement->execute(
             array(
@@ -153,22 +155,21 @@ JOIN Branch ON Purchase_Ledger.Branch = Branch.id
 } else {
     $Branch = $_SESSION['Linked_branch'];
     $statement = $connect->prepare("
-SELECT
-Purchase_Ledger.id,
-Purchase_Ledger.Date,
-Purchase_Ledger.Bill_no,
-Purchase_Ledger.Sellers_name,
-Purchase_Ledger.Sellers_PAN_no,
-Purchase_Ledger.Total_Purchase_Amount,
-Purchase_Ledger.VAT_included_purchase_amount,
-Purchase_Ledger.VAT_included_purchase_VAT_amount,
-Branch.Name
-FROM
-Purchase_Ledger
-JOIN Branch ON Purchase_Ledger.Branch = Branch.id
-WHERE Purchase_Ledger.Branch = :Branch
-    order by Date
-");
+            SELECT
+            Purchase_Ledger.id,
+            Purchase_Ledger.Date,
+            Purchase_Ledger.Bill_no,
+            accounts_info.Name,
+            Purchase_Ledger.Sellers_PAN_no,
+            Purchase_Ledger.Total_Purchase_Amount,
+            Purchase_Ledger.VAT_included_purchase_amount,
+            Purchase_Ledger.VAT_included_purchase_VAT_amount,
+            Branch.Branch_Name
+        FROM
+            Purchase_Ledger
+        JOIN Branch ON Purchase_Ledger.Branch = Branch.id
+        JOIN accounts_info ON Purchase_Ledger.Sellers_name = accounts_info.id
+    ");
 
     $statement->execute(
         array(
@@ -182,23 +183,24 @@ WHERE Purchase_Ledger.Branch = :Branch
 
     if (isset($_POST['filter'])) {
         $statement = $connect->prepare("
-    SELECT
-    Purchase_Ledger.id,
-    Purchase_Ledger.Date,
-    Purchase_Ledger.Bill_no,
-    Purchase_Ledger.Sellers_name,
-    Purchase_Ledger.Sellers_PAN_no,
-    Purchase_Ledger.Total_Purchase_Amount,
-    Purchase_Ledger.VAT_included_purchase_amount,
-    Purchase_Ledger.VAT_included_purchase_VAT_amount,
-    Branch.Name
-    FROM
-    Purchase_Ledger
-    JOIN Branch ON Purchase_Ledger.Branch = Branch.id
-    WHERE Date Between :startDate AND :endDate 
-    AND Purchase_Ledger.Branch = :Branch
-    order by Date;
-    ");
+                SELECT
+                Purchase_Ledger.id,
+                Purchase_Ledger.Date,
+                Purchase_Ledger.Bill_no,
+                accounts_info.Name,
+                Purchase_Ledger.Sellers_PAN_no,
+                Purchase_Ledger.Total_Purchase_Amount,
+                Purchase_Ledger.VAT_included_purchase_amount,
+                Purchase_Ledger.VAT_included_purchase_VAT_amount,
+                Branch.Branch_Name
+            FROM
+                Purchase_Ledger
+            JOIN Branch ON Purchase_Ledger.Branch = Branch.id
+            JOIN accounts_info ON Purchase_Ledger.Sellers_name = accounts_info.id
+            WHERE Date Between :startDate AND :endDate 
+            AND Purchase_Ledger.Branch = :Branch
+            order by Date;
+        ");
 
         $statement->execute(
             array(
@@ -427,7 +429,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         <label for="name">Date</label>
                                     </th>
                                     <td>
-                                        <input type="date" name="Date" id="Adddate" required class="form-control date">
+                                        <input type="date" name="Date" id="Adddate" required class="form-control date" tabindex="1">
                                     </td>
                                 </tr>
                                 <tr>
@@ -435,7 +437,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         <label for="panno">Invoice No</label>
                                     </th>
                                     <td>
-                                        <input type="number" name="Bill_No" id="billno" class="form-control" required>
+                                        <input type="number" name="Bill_No" id="billno" class="form-control" tabindex="2" required>
                                     </td>
                                 </tr>
                                 <tr>
@@ -443,7 +445,31 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         <label for="phone">Seller's Name</label>
                                     </th>
                                     <td>
-                                        <input type="text" name="Sellers_name" id="Customersname" required class="form-control">
+                                        <select name="Sellers_name" id="Customersname" required class="form-control Customers_name" tabindex="3">
+                                            <option>Select a Customer</option>
+                                            <?php
+                                            $statement = $connect->prepare("
+                                            SELECT * FROM accounts_info
+                                            WHERE Account_type = :Account_type
+                                        ");
+                                            $statement->execute(
+                                                array(
+                                                    ':Account_type' => $Account_type
+                                                )
+                                            );
+
+                                            $all_result = $statement->fetchAll();
+
+                                            $total_rows = $statement->rowCount();
+
+                                            foreach ($all_result as $row) {
+                                                echo '
+                                        <option value="' . $row["id"] . '">' . $row["Name"] . '</option>
+                                        ';
+                                            }
+
+                                            ?>
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
@@ -451,12 +477,29 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         <label for="phone">Seller's PAN No</label>
                                     </th>
                                     <td>
-                                        <input type="number" name="Sellers_PAN_no" id="Customerspanno" required class="form-control">
+                                    <div id="item_sub_category"><input type="number" name="Sellers_PAN_no" id="Customerspanno" required class="form-control" readonly></div>
                                     </td>
                                 </tr>
+                                <script>
+                                    $(document).on('change', '.Customers_name', function() {
+                                        var category_id = $(this).val();
+                                        $.ajax({
+                                            url: "fill_pan_no_purchase.php",
+                                            method: "POST",
+                                            data: {
+                                                category_id: category_id
+                                            },
+                                            success: function(data) {
+                                                var html = '';
+                                                html += data;
+                                                $('#item_sub_category').html(html);
+                                            }
+                                        })
+                                    });
+                                </script>
                                 <tr>
                                     <th>
-                                        <label for="phone">Total purchase Amount</label>
+                                        <label for="phone">Total Purchase Amount</label>
                                     </th>
                                     <td>
                                         <input type="number" name="Total_Purchase_Amount" id="totalpurchaseamount" required class="form-control" readonly>
@@ -486,7 +529,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                             <label for="phone">Branch</label>
                                         </th>
                                         <td>
-                                            <select name="Branch" id="Branch" required class="form-control Branch">
+                                            <select name="Branch" id="Branch" required class="form-control Branch" tabindex="5">
                                                 <option>Select Branch</option>
                                                 <?php echo LoadBranch($connect); ?>
                                             </select>
@@ -593,7 +636,37 @@ WHERE Purchase_Ledger.Branch = :Branch
                                                 <label for="phone">Seller's Name</label>
                                             </th>
                                             <td>
-                                                <input type="text" name="Sellers_name" id="Customersname" value="<?php echo $row["Sellers_name"]; ?>" required class="form-control">
+                                                <select name="Sellers_name" id="Customersname" required class="form-control Customers_name" tabindex="3">
+                                                    <?php
+                                                    $statement = $connect->prepare("
+                                                        SELECT * FROM accounts_info
+                                                        WHERE Account_type = :Account_type
+                                                    ");
+                                                    $statement->execute(
+                                                        array(
+                                                            ':Account_type' => $Account_type
+                                                        )
+                                                    );
+
+                                                    $all_result = $statement->fetchAll();
+
+                                                    $total_rows = $statement->rowCount();
+
+                                                    foreach ($all_result as $row1) {
+                                                        echo $row["id"] . "<br>" . $row["Customers_name"];
+                                                        if ($row1["id"] == $row["Customers_name"]) {
+                                                            echo '
+                                                            <option value="' . $row1["id"] . '" selected>' . $row1["Name"] . '</option>
+                                                            ';
+                                                        } else {
+                                                            echo '
+                                                            <option value="' . $row1["id"] . '">' . $row1["Name"] . '</option>
+                                                            ';
+                                                        }
+                                                    }
+
+                                                    ?>
+                                                </select>
                                             </td>
                                         </tr>
                                         <tr>
@@ -601,12 +674,29 @@ WHERE Purchase_Ledger.Branch = :Branch
                                                 <label for="phone">Seller's PAN No</label>
                                             </th>
                                             <td>
-                                                <input type="number" name="Sellers_PAN_no" id="Customerspanno" value="<?php echo $row["Sellers_PAN_no"]; ?>" required class="form-control">
+                                            <div id="item_sub_category"><input type="number" name="Sellers_PAN_no" id="Customerspanno" value="<?php echo $row["Sellers_PAN_no"]; ?>" required class="form-control"></div>
                                             </td>
                                         </tr>
+                                        <script>
+                                            $(document).on('change', '.Customers_name', function() {
+                                                var category_id = $(this).val();
+                                                $.ajax({
+                                                    url: "fill_pan_no_purchase.php",
+                                                    method: "POST",
+                                                    data: {
+                                                        category_id: category_id
+                                                    },
+                                                    success: function(data) {
+                                                        var html = '';
+                                                        html += data;
+                                                        $('#item_sub_category').html(html);
+                                                    }
+                                                })
+                                            });
+                                        </script>
                                         <tr>
                                             <th>
-                                                <label for="phone">Total purchase Amount</label>
+                                                <label for="phone">Total Purchase Amount</label>
                                             </th>
                                             <td>
                                                 <input type="number" name="Total_Purchase_Amount" id="totalpurchaseamount" value="<?php echo $row["Total_Purchase_Amount"]; ?>" required class="form-control" readonly>
@@ -783,7 +873,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                     <table class='table table-bordered table-striped'>
                                         <thead>
                                             <tr style="text-align:center;">
-                                                <td>#</td>
+                                                <td>P_ID</td>
                                                 <td style="white-space: nowrap;">Date</td>
                                                 <td>Invoice No</td>
                                                 <td>Seller's Name</td>
@@ -809,12 +899,12 @@ WHERE Purchase_Ledger.Branch = :Branch
                                                 <td>' . $row["id"] . '</td>
                                                 <td style="white-space: nowrap;">' . $row['Date'] . '</td>
                                                 <td>' . $row['Bill_no'] . '</td>
-                                                <td>' . $row['Sellers_name'] . '</td>
+                                                <td>' . $row['Name'] . '</td>
                                                 <td>' . $row['Sellers_PAN_no'] . '</td>
                                                 <td>' . $row['Total_Purchase_Amount'] . '</td>
                                                 <td>' . $row['VAT_included_purchase_amount'] . '</td>
                                                 <td>' . $row['VAT_included_purchase_VAT_amount'] . '</td>
-                                                <td>' . $row['Name'] . '</td>
+                                                <td>' . $row['Branch_Name'] . '</td>
                                             </tr>
                                             ';
                                                 }
@@ -861,12 +951,12 @@ WHERE Purchase_Ledger.Branch = :Branch
                                                 <td>' . $row["id"] . '</td>
                                                 <td style="white-space: nowrap;">' . $row['Date'] . '</td>
                                                 <td>' . $row['Bill_no'] . '</td>
-                                                <td>' . $row['Sellers_name'] . '</td>
+                                                <td>' . $row['Name'] . '</td>
                                                 <td>' . $row['Sellers_PAN_no'] . '</td>
                                                 <td>' . $row['Total_Purchase_Amount'] . '</td>
                                                 <td>' . $row['VAT_included_purchase_amount'] . '</td>
                                                 <td>' . $row['VAT_included_purchase_VAT_amount'] . '</td>
-                                                <td>' . $row['Name'] . '</td>
+                                                <td>' . $row['Branch_Name'] . '</td>
                                                 <td><a href="purchase.php?update=1&id=' . $row["id"] . '">Edit</a></td>
                                                 <td><a href="purchase.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
                                             </tr>
