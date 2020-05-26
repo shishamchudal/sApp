@@ -222,7 +222,7 @@ if ($_SESSION["User_type"] == "Admin") {
                     "<br> Total_sales_amount: " . trim($_POST["Total_sales_amount"]) .
                     "<br> VAT_included_sales_amount: " . trim($_POST["VAT_included_sales_amount"]) .
                     "<br> VAT_included_sales_VAT: " . trim($_POST["VAT_included_sales_VAT"]) .
-                    "<br> Branch: " . trim($_POST["Branch"]) .
+                    "<br> Branch: " . trim($_SESSION["Linked_branch"]) .
                     "<hr>";
             $statement = $connect->prepare("
         INSERT INTO `Sales_Ledger`(
@@ -255,7 +255,7 @@ if ($_SESSION["User_type"] == "Admin") {
                     ':Total_sales_amount'             =>  trim($_POST["Total_sales_amount"]),
                     ':VAT_included_sales_amount'             =>  trim($_POST["VAT_included_sales_amount"]),
                     ':VAT_included_sales_VAT'             =>  trim($_POST["VAT_included_sales_VAT"]),
-                    ':Branch'             =>  trim($_POST["Branch"])
+                    ':Branch'             =>  trim($_SESSION["Linked_branch"])
                 )
             );
             echo "Added Sucessfully";
@@ -478,17 +478,6 @@ if ($_SESSION["User_type"] == "Admin") {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>
-                                        <label for="phone">Branch</label>
-                                    </th>
-                                    <td>
-                                        <select name="Branch" id="Branch" required class="form-control Branch">
-                                            <option>Select Branch</option>
-                                            <?php echo LoadBranch($connect); ?>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td colspan="2">
                                         <input type="submit" id="Add" class="btn btn-primary" value="Add" name="Add">
                                         <a href="sales.php" class="btn btn-default">Cancel</a>
@@ -535,10 +524,14 @@ if ($_SESSION["User_type"] == "Admin") {
                                         alert("Please Enter Sales amount");
                                         return false;
                                     }
-                                    if ($.trim($('#Branch').val()).length == 0) {
-                                        alert("Please Select Branch");
-                                        return false;
-                                    }
+                                    <?php
+                                    if ($_SESSION["User_type"] == "Admin") {
+                                    ?>
+                                        if ($.trim($('#Branch').val()).length == 0) {
+                                            alert("Please Select Branch");
+                                            return false;
+                                        }
+                                    <?php } ?>
                                     $('#Cheque_form').submit();
                                     alert('Record added sucessfully!');
                                 });

@@ -223,7 +223,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                     "<br> Total_Purchase_Amount: " . trim($_POST["Total_Purchase_Amount"]) .
                     "<br> VAT_included_purchase_amount: " . trim($_POST["VAT_included_purchase_amount"]) .
                     "<br> VAT_included_purchase_VAT_amount: " . trim($_POST["VAT_included_purchase_VAT_amount"]) .
-                    "<br> Branch: " . trim($_POST["Branch"]) .
+                    "<br> Branch: " . trim($_SESSION["Linked_branch"]) .
                     "<hr>";
             $statement = $connect->prepare("
             INSERT INTO `Purchase_Ledger`(
@@ -256,7 +256,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                     ':Total_Purchase_Amount'             =>  trim($_POST["Total_Purchase_Amount"]),
                     ':VAT_included_purchase_amount'             =>  trim($_POST["VAT_included_purchase_amount"]),
                     ':VAT_included_purchase_VAT_amount'             =>  trim($_POST["VAT_included_purchase_VAT_amount"]),
-                    ':Branch'             =>  trim($_POST["Branch"])
+                    ':Branch'             =>  trim($_SESSION["Linked_branch"])
                 )
             );
             echo "Added Sucessfully";
@@ -479,17 +479,6 @@ WHERE Purchase_Ledger.Branch = :Branch
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>
-                                        <label for="phone">Branch</label>
-                                    </th>
-                                    <td>
-                                        <select name="Branch" id="Branch" required class="form-control Branch">
-                                            <option>Select Branch</option>
-                                            <?php echo LoadBranch($connect); ?>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td colspan="2">
                                         <input type="submit" id="Add" class="btn btn-primary" value="Add" name="Add">
                                         <a href="purchase.php" class="btn btn-default">Cancel</a>
@@ -532,10 +521,14 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         alert("Please Enter purchase amount");
                                         return false;
                                     }
-                                    if ($.trim($('#Branch').val()).length == 0) {
-                                        alert("Please Select Branch");
-                                        return false;
-                                    }
+                                    <?php
+                                    if ($_SESSION["User_type"] == "Admin") {
+                                    ?>
+                                        if ($.trim($('#Branch').val()).length == 0) {
+                                            alert("Please Select Branch");
+                                            return false;
+                                        }
+                                    <?php } ?>
                                     $('#Cheque_form').submit();
                                     alert('Record added sucessfully!');
                                 });
