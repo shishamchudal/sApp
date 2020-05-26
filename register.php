@@ -126,7 +126,7 @@ if (isset($_SESSION['loggedin'])) {
       <div class="card-body p-0">
         <!-- Nested Row within Card Body -->
         <div class="row">
-          <div class="col-lg-5 d-none d-lg-block style="position: relative;  overflow: hidden;"><img src="img/login.jpg" width="100%" alt="LOGIN" style="position: absolute;top: -9999px;  left: -9999px;  right: -9999px;  bottom: -9999px;  margin: auto;">
+          <div class="col-lg-5 d-none d-lg-block style="position: relative;  overflow: hidden;"><img src="img/login2.jpg" width="100%" alt="LOGIN" style="position: absolute;top: -9999px;  left: -9999px;  right: -9999px;  bottom: -9999px;  margin: auto;">
               </div>
           <div class="col-lg-7">
             <div class="p-5">
