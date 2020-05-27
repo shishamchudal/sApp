@@ -32,7 +32,7 @@
 
    <!-- Nav Item - Tables -->
    <li class="nav-item">
-     <a class="nav-link" href="accounts.php">
+     <a class="nav-link" href="Accounts.php">
        <i class="fas fa-users"></i>
        <span>Account's List</span></a>
    </li>
@@ -52,7 +52,7 @@
     ?>
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
-    
+
      <!-- Nav Item - Tables -->
      <li class="nav-item">
        <a class="nav-link" href="branch.php">
