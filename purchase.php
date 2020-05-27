@@ -1,5 +1,7 @@
 <?php
 $Account_type = "Vendor";
+$description = "Purchase Register";
+$Record_type = "Purchase";
 include 'includes/header.php';
 include('functions.php');
 include('database_connection.php');
@@ -104,6 +106,24 @@ if ($_SESSION["User_type"] == "Admin") {
                     ':Branch'             =>  trim($_POST["Branch"])
                 )
             );
+            $statement = $connect->query("SELECT LAST_INSERT_ID()");
+            $order_id = $statement->fetchColumn();
+            $description = "Purchase Invoice #" . trim($order_id);
+            $statement = $connect->prepare("
+                INSERT INTO accounts_details
+                (Account_id, Record_type, order_id, Date, Description, Cr) 
+                VALUES (:Account_id, :Record_type, :order_id, :Date, :Description, :Cr);
+            ");
+            $statement->execute(
+                array(
+                    ':Account_id'               =>  trim($_POST["Sellers_name"]),
+                    ':Record_type'             =>  trim($Record_type),
+                    ':order_id' => trim($order_id),
+                    ':Date'             =>  trim($_POST["Date"]),
+                    ':Description'                 =>  trim($description),
+                    ':Cr'               =>  trim($_POST["Total_Purchase_Amount"])
+                )
+            );
             echo "Added Sucessfully";
         } catch (Exception $e) {
             echo 'Caught exception: ',  $e->getMessage(), "\n";
@@ -137,6 +157,19 @@ if ($_SESSION["User_type"] == "Admin") {
                     ':VAT_included_purchase_VAT_amount'             =>  trim($_POST["VAT_included_purchase_VAT_amount"])
                 )
             );
+            $statement = $connect->prepare("
+            UPDATE accounts_details
+            SET Cr = :Cr
+            WHERE order_id = :id 
+            AND Record_type = :Record_type;
+            ");
+            $statement->execute(
+              array(
+                ':id'                   => $_GET["id"],
+                ':Cr'             =>  trim($_POST["Total_Purchase_Amount"]),
+                ':Record_type' => $Record_type
+              )
+            );
             echo "Values updated sucessfully!";
             header("location:purchase.php");
         }
@@ -150,6 +183,16 @@ if ($_SESSION["User_type"] == "Admin") {
                 ':id'       =>      $_GET["id"]
             )
         );
+        $statement = $connect->prepare(
+            "DELETE FROM accounts_details WHERE order_id = :id
+            AND Record_type = :Record_type"
+          );
+          $statement->execute(
+            array(
+              ':id'       =>      $_GET["id"],
+              ':Record_type' => $Record_type
+            )
+          );
         header("location:purchase.php");
     }
 } else {
@@ -260,6 +303,23 @@ if ($_SESSION["User_type"] == "Admin") {
                     ':VAT_included_purchase_VAT_amount'             =>  trim($_POST["VAT_included_purchase_VAT_amount"]),
                     ':Branch'             =>  trim($_SESSION["Linked_branch"])
                 )
+            );$statement = $connect->query("SELECT LAST_INSERT_ID()");
+            $order_id = $statement->fetchColumn();
+            $description = "Purchase Invoice #" . trim($order_id);
+            $statement = $connect->prepare("
+                INSERT INTO accounts_details
+                (Account_id, Record_type, order_id, Date, Description, Cr) 
+                VALUES (:Account_id, :Record_type, :order_id, :Date, :Description, :Cr);
+            ");
+            $statement->execute(
+                array(
+                    ':Account_id'               =>  trim($_POST["Sellers_name"]),
+                    ':Record_type'             =>  trim($Record_type),
+                    ':order_id' => trim($order_id),
+                    ':Date'             =>  trim($_POST["Date"]),
+                    ':Description'                 =>  trim($description),
+                    ':Cr'               =>  trim($_POST["Total_Purchase_Amount"])
+                )
             );
             echo "Added Sucessfully";
         } catch (Exception $e) {
@@ -294,6 +354,19 @@ if ($_SESSION["User_type"] == "Admin") {
                     ':VAT_included_purchase_VAT_amount'             =>  trim($_POST["VAT_included_purchase_VAT_amount"])
                 )
             );
+            $statement = $connect->prepare("
+            UPDATE accounts_details
+            SET Cr = :Cr
+            WHERE order_id = :id 
+            AND Record_type = :Record_type;
+            ");
+            $statement->execute(
+              array(
+                ':id'                   => $_GET["id"],
+                ':Cr'             =>  trim($_POST["Total_Purchase_Amount"]),
+                ':Record_type' => $Record_type
+              )
+            );
             echo "Values updated sucessfully!";
             header("location:purchase.php");
         }
@@ -321,6 +394,16 @@ if ($_SESSION["User_type"] == "Admin") {
                         ':id'       =>      $_GET["id"]
                     )
                 );
+                $statement = $connect->prepare(
+                    "DELETE FROM accounts_details WHERE order_id = :id
+                    AND Record_type = :Record_type"
+                  );
+                  $statement->execute(
+                    array(
+                      ':id'       =>      $_GET["id"],
+                      ':Record_type' => $Record_type
+                    )
+                  );
                 header("location:purchase.php");
             } else {
 ?>
@@ -477,7 +560,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                         <label for="phone">Seller's PAN No</label>
                                     </th>
                                     <td>
-                                    <div id="item_sub_category"><input type="number" name="Sellers_PAN_no" id="Customerspanno" required class="form-control" readonly></div>
+                                        <div id="item_sub_category"><input type="number" name="Sellers_PAN_no" id="Customerspanno" required class="form-control" readonly></div>
                                     </td>
                                 </tr>
                                 <script>
@@ -674,7 +757,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                                 <label for="phone">Seller's PAN No</label>
                                             </th>
                                             <td>
-                                            <div id="item_sub_category"><input type="number" name="Sellers_PAN_no" id="Customerspanno" value="<?php echo $row["Sellers_PAN_no"]; ?>" required class="form-control"></div>
+                                                <div id="item_sub_category"><input type="number" name="Sellers_PAN_no" id="Customerspanno" value="<?php echo $row["Sellers_PAN_no"]; ?>" required class="form-control"></div>
                                             </td>
                                         </tr>
                                         <script>

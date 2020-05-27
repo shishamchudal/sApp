@@ -1,5 +1,7 @@
 <?php
 $Account_type = "Customer";
+$description = "Sales Register";
+$Record_type = "Sales";
 include 'includes/header.php';
 include('functions.php');
 include('database_connection.php');
@@ -43,7 +45,7 @@ if ($_SESSION["User_type"] == "Admin") {
         Sales_Ledger
         JOIN Branch ON Sales_Ledger.Branch = Branch.id
         JOIN accounts_info ON Sales_Ledger.Customers_name = accounts_info.id
-    WHERE Date Between :startDate AND :endDate order by Date;
+        WHERE Date Between :startDate AND :endDate order by Date;
     ");
 
         $statement->execute(
@@ -104,6 +106,24 @@ if ($_SESSION["User_type"] == "Admin") {
                     ':Branch'             =>  trim($_POST["Branch"])
                 )
             );
+            $statement = $connect->query("SELECT LAST_INSERT_ID()");
+            $order_id = $statement->fetchColumn();
+            $description = "Sales Record #" . trim($order_id);
+            $statement = $connect->prepare("
+        INSERT INTO accounts_details
+        (Account_id, Record_type, order_id, Date, Description, Dr) 
+        VALUES (:Account_id, :Record_type, :order_id, :Date, :Description, :Dr);
+        ");
+            $statement->execute(
+                array(
+                    ':Account_id'               =>  trim($_POST["Customers_name"]),
+                    ':Record_type'             =>  trim($Record_type),
+                    ':order_id' => trim($order_id),
+                    ':Date'             =>  trim($_POST["Date"]),
+                    ':Description'                 =>  trim($description),
+                    ':Dr'               =>  trim($_POST["Total_sales_amount"])
+                )
+            );
             echo "Added Sucessfully";
         } catch (Exception $e) {
             echo 'Caught exception: ',  $e->getMessage(), "\n";
@@ -137,6 +157,19 @@ if ($_SESSION["User_type"] == "Admin") {
                     ':VAT_included_sales_VAT'             =>  trim($_POST["VAT_included_sales_VAT"])
                 )
             );
+            $statement = $connect->prepare("
+                UPDATE accounts_details
+                SET Dr = :Dr
+                WHERE order_id = :id 
+                AND Record_type = :Record_type;
+            ");
+            $statement->execute(
+                array(
+                    ':id'                   => $_GET["id"],
+                    ':Dr'             =>  trim($_POST["Total_sales_amount"]),
+                    ':Record_type' => $Record_type
+                )
+            );
             echo "Values updated sucessfully!";
             header("location:sales.php");
         }
@@ -148,6 +181,16 @@ if ($_SESSION["User_type"] == "Admin") {
         $statement->execute(
             array(
                 ':id'       =>      $_GET["id"]
+            )
+        );
+        $statement = $connect->prepare(
+            "DELETE FROM accounts_details WHERE order_id = :id
+            AND Record_type = :Record_type"
+        );
+        $statement->execute(
+            array(
+                ':id'       =>      $_GET["id"],
+                ':Record_type' => $Record_type
             )
         );
         header("location:sales.php");
@@ -261,6 +304,24 @@ if ($_SESSION["User_type"] == "Admin") {
                     ':Branch'             =>  trim($_SESSION["Linked_branch"])
                 )
             );
+            $statement = $connect->query("SELECT LAST_INSERT_ID()");
+            $order_id = $statement->fetchColumn();
+            $description = "Sales Record #" . trim($order_id);
+            $statement = $connect->prepare("
+        INSERT INTO accounts_details
+        (Account_id, Record_type, order_id, Date, Description, Dr) 
+        VALUES (:Account_id, :Record_type, :order_id, :Date, :Description, :Dr);
+        ");
+            $statement->execute(
+                array(
+                    ':Account_id'               =>  trim($_POST["Customers_name"]),
+                    ':Record_type'             =>  trim($Record_type),
+                    ':order_id' => trim($order_id),
+                    ':Date'             =>  trim($_POST["Date"]),
+                    ':Description'                 =>  trim($description),
+                    ':Dr'               =>  trim($_POST["Total_sales_amount"])
+                )
+            );
             echo "Added Sucessfully";
         } catch (Exception $e) {
             echo 'Caught exception: ',  $e->getMessage(), "\n";
@@ -294,6 +355,19 @@ if ($_SESSION["User_type"] == "Admin") {
                     ':VAT_included_sales_VAT'             =>  trim($_POST["VAT_included_sales_VAT"])
                 )
             );
+            $statement = $connect->prepare("
+                UPDATE accounts_details
+                SET Dr = :Dr
+                WHERE order_id = :id 
+                AND Record_type = :Record_type;
+            ");
+            $statement->execute(
+                array(
+                    ':id'                   => $_GET["id"],
+                    ':Dr'             =>  trim($_POST["Total_sales_amount"]),
+                    ':Record_type' => $Record_type
+                )
+            );
             echo "Values updated sucessfully!";
             header("location:sales.php");
         }
@@ -321,6 +395,16 @@ if ($_SESSION["User_type"] == "Admin") {
                         ':id'       =>      $_GET["id"]
                     )
                 );
+                $statement = $connect->prepare(
+                    "DELETE FROM accounts_details WHERE order_id = :id
+                    AND Record_type = :Record_type"
+                );
+                $statement->execute(
+                    array(
+                        ':id'       =>      $_GET["id"],
+                        ':Record_type' => $Record_type
+                    )
+                );
                 header("location:sales.php");
             } else {
 ?>
@@ -337,7 +421,7 @@ if ($_SESSION["User_type"] == "Admin") {
 <!DOCTYPE html>
 <html lang="en">
 
-<head>    
+<head>
     <title>Sales's Register (बिक्री खाता)</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -927,7 +1011,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                 <thead>
                                     <tr style="text-align:center;">
                                         <td>S_ID</td>
-                                        <td style="white-space: nowrap;">>Date</td>
+                                        <td style="white-space: nowrap;">Date</td>
                                         <td>Invoice No</td>
                                         <td>Customer's Name</td>
                                         <td>Customer's PAN No</td>
