@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: May 08, 2020 at 07:42 AM
+-- Generation Time: May 27, 2020 at 03:26 AM
 -- Server version: 5.7.26
 -- PHP Version: 7.4.2
 
@@ -13,8 +13,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `sApp`
 --
-CREATE DATABASE IF NOT EXISTS `sApp` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `sApp`;
 
 -- --------------------------------------------------------
 
@@ -27,7 +25,41 @@ CREATE TABLE `accounts` (
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `activation_code` varchar(50) DEFAULT ''
+  `activation_code` varchar(50) DEFAULT '',
+  `User_type` enum('Admin','Standard') NOT NULL DEFAULT 'Standard',
+  `Linked_branch` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `accounts_details`
+--
+
+CREATE TABLE `accounts_details` (
+  `id` int(11) NOT NULL,
+  `Account_id` int(11) NOT NULL,
+  `Record_type` enum('Opening Balance','Credit','Cheque','Purchase','Sales','Cash','Voucher') NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `Date` date DEFAULT NULL,
+  `Description` varchar(255) NOT NULL,
+  `Dr` int(11) NOT NULL DEFAULT '0',
+  `Cr` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `accounts_info`
+--
+
+CREATE TABLE `accounts_info` (
+  `id` int(11) NOT NULL,
+  `Name` varchar(255) NOT NULL,
+  `Address` varchar(255) DEFAULT NULL,
+  `Phone` bigint(11) DEFAULT NULL,
+  `PAN_No` bigint(20) DEFAULT NULL,
+  `Account_type` enum('Vendor','Customer','Cash') NOT NULL DEFAULT 'Customer'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -38,10 +70,12 @@ CREATE TABLE `accounts` (
 
 CREATE TABLE `Branch` (
   `id` int(11) NOT NULL,
-  `Name` varchar(255) NOT NULL,
+  `Branch_Name` varchar(255) NOT NULL,
   `Address` varchar(255) DEFAULT NULL,
   `Phone` bigint(20) DEFAULT NULL,
-  `Branch_type` enum('Main Branch','Sub Branch') NOT NULL DEFAULT 'Main Branch'
+  `PAN` bigint(20) NOT NULL,
+  `Branch_type` enum('Main Branch','Sub Branch') NOT NULL DEFAULT 'Main Branch',
+  `Linked_account` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -54,11 +88,11 @@ CREATE TABLE `Purchase_Ledger` (
   `id` int(11) NOT NULL,
   `Date` date NOT NULL,
   `Bill_No` int(11) NOT NULL,
-  `Sellers_name` varchar(255) NOT NULL,
+  `Sellers_name` int(255) NOT NULL,
   `Sellers_PAN_no` int(255) NOT NULL,
-  `Total_Purchase_Amount` int(255) NOT NULL,
-  `VAT_included_purchase_amount` int(11) NOT NULL,
-  `VAT_included_purchase_VAT_amount` int(11) NOT NULL,
+  `Total_Purchase_Amount` decimal(10,2) NOT NULL,
+  `VAT_included_purchase_amount` decimal(10,2) NOT NULL,
+  `VAT_included_purchase_VAT_amount` decimal(10,2) NOT NULL,
   `Branch` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -72,11 +106,11 @@ CREATE TABLE `Sales_Ledger` (
   `id` int(11) NOT NULL,
   `Date` date NOT NULL,
   `Bill_no` bigint(11) NOT NULL,
-  `Customers_name` varchar(255) NOT NULL,
+  `Customers_name` int(255) NOT NULL,
   `Customers_PAN_no` bigint(11) NOT NULL,
-  `Total_sales_amount` bigint(11) NOT NULL,
-  `VAT_included_sales_amount` bigint(11) NOT NULL,
-  `VAT_included_sales_VAT` bigint(11) NOT NULL,
+  `Total_sales_amount` decimal(10,2) NOT NULL,
+  `VAT_included_sales_amount` decimal(10,2) NOT NULL,
+  `VAT_included_sales_VAT` decimal(10,2) NOT NULL,
   `Branch` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -88,6 +122,18 @@ CREATE TABLE `Sales_Ledger` (
 -- Indexes for table `accounts`
 --
 ALTER TABLE `accounts`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `accounts_details`
+--
+ALTER TABLE `accounts_details`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `accounts_info`
+--
+ALTER TABLE `accounts_info`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -116,6 +162,18 @@ ALTER TABLE `Sales_Ledger`
 -- AUTO_INCREMENT for table `accounts`
 --
 ALTER TABLE `accounts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `accounts_details`
+--
+ALTER TABLE `accounts_details`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `accounts_info`
+--
+ALTER TABLE `accounts_info`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
