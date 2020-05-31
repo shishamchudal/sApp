@@ -775,7 +775,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                     <table class='table table-bordered table-striped'>
                                         <thead>
                                             <tr style="text-align:center;">
-                                                <td>#</td>
+                                                <td>P_ID</td>
                                                 <td style="white-space: nowrap;">Date</td>
                                                 <td>Invoice No</td>
                                                 <td>Seller's Name</td>
