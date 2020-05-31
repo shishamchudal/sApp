@@ -136,7 +136,8 @@ if ($_SESSION["User_type"] == "Admin") {
                 )
             );
             echo "Values updated sucessfully!";
-            header("location:sales.php");
+            echo "<script type='text/javascript'>window.top.location='sales.php';</script>";
+            exit;
         }
     }
     if (isset($_GET["delete"]) && isset($_GET["id"])) {
@@ -148,7 +149,8 @@ if ($_SESSION["User_type"] == "Admin") {
                 ':id'       =>      $_GET["id"]
             )
         );
-        header("location:sales.php");
+        echo "<script type='text/javascript'>window.top.location='sales.php';</script>";
+        exit;
     }
 } else {
     $Branch = $_SESSION['Linked_branch'];
@@ -263,7 +265,8 @@ if ($_SESSION["User_type"] == "Admin") {
         } catch (Exception $e) {
             echo 'Caught exception: ',  $e->getMessage(), "\n";
         }
-        header("location:sales.php");
+        echo "<script type='text/javascript'>window.top.location='sales.php';</script>";
+        exit;
     }
     if (isset($_GET["update"])) {
         if (isset($_POST["Update"])) {
@@ -292,7 +295,8 @@ if ($_SESSION["User_type"] == "Admin") {
                 )
             );
             echo "Values updated sucessfully!";
-            header("location:sales.php");
+            echo "<script type='text/javascript'>window.top.location='sales.php';</script>";
+            exit;
         }
     }
     if (isset($_GET["delete"]) && isset($_GET["id"])) {
@@ -318,7 +322,8 @@ if ($_SESSION["User_type"] == "Admin") {
                         ':id'       =>      $_GET["id"]
                     )
                 );
-                header("location:sales.php");
+                echo "<script type='text/javascript'>window.top.location='sales.php';</script>";
+                exit;
             } else {
 ?>
                 <script>
