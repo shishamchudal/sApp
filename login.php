@@ -56,7 +56,7 @@ if (isset($_SESSION['loggedin'])) {
               <div class="col-lg-6">
                 <div class="p-5">
                   <div class="text-center">
-                    <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                    <h1 class="h4 text-gray-900 mb-4">Welcome Back to MotherLand Computer!</h1>
                   </div>
                   <form class="user" action="authenticate.php" method="post">
                     <div class="form-group">
