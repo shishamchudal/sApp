@@ -34,7 +34,7 @@ Short description of the files and there uses:-
 
 ## Authors
 
-Shisham Chudal - Lead Programmer.
+**Shisham Chudal** - Lead Programmer.
 See also the list of contributors who participated in this project.
 
 ## License
