@@ -136,7 +136,8 @@ JOIN Branch ON Purchase_Ledger.Branch = Branch.id
                 )
             );
             echo "Values updated sucessfully!";
-            header("location:purchase.php");
+            echo "<script type='text/javascript'>window.top.location='purchase.php';</script>";
+            exit;
         }
     }
     if (isset($_GET["delete"]) && isset($_GET["id"])) {
@@ -148,7 +149,8 @@ JOIN Branch ON Purchase_Ledger.Branch = Branch.id
                 ':id'       =>      $_GET["id"]
             )
         );
-        header("location:purchase.php");
+        echo "<script type='text/javascript'>window.top.location='purchase.php';</script>";
+        exit;
     }
 } else {
     $Branch = $_SESSION['Linked_branch'];
@@ -293,7 +295,8 @@ WHERE Purchase_Ledger.Branch = :Branch
                 )
             );
             echo "Values updated sucessfully!";
-            header("location:purchase.php");
+            echo "<script type='text/javascript'>window.top.location='purchase.php';</script>";
+            exit;
         }
     }
     if (isset($_GET["delete"]) && isset($_GET["id"])) {
@@ -319,7 +322,8 @@ WHERE Purchase_Ledger.Branch = :Branch
                         ':id'       =>      $_GET["id"]
                     )
                 );
-                header("location:purchase.php");
+                echo "<script type='text/javascript'>window.top.location='purchase.php';</script>";
+                exit;
             } else {
 ?>
                 <script>

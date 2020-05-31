@@ -106,7 +106,8 @@ if ($_SESSION["User_type"] == "Admin") {
         } catch (Exception $e) {
             echo 'Caught exception: ',  $e->getMessage(), "\n";
         }
-        header("location:sales.php");
+        echo "<script type='text/javascript'>window.top.location='sales.php';</script>";
+        exit;
     }
     if (isset($_GET["update"])) {
         if (isset($_POST["Update"])) {
@@ -335,7 +336,7 @@ if ($_SESSION["User_type"] == "Admin") {
 
 <head>
     <meta charset="utf-8">
-    <title>Sales's Register (बिक्री खाता)</title>
+    <title>Sale's Register (बिक्री खाता)</title>
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
