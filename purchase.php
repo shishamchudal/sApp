@@ -4,31 +4,6 @@ include('functions.php');
 include('database_connection.php');
 if ($_SESSION["User_type"] == "Admin") {
     $statement = $connect->prepare("
-SELECT
-Purchase_Ledger.id,
-Purchase_Ledger.Date,
-Purchase_Ledger.Bill_no,
-Purchase_Ledger.Sellers_name,
-Purchase_Ledger.Sellers_PAN_no,
-Purchase_Ledger.Total_Purchase_Amount,
-Purchase_Ledger.VAT_included_purchase_amount,
-Purchase_Ledger.VAT_included_purchase_VAT_amount,
-Branch.Name,
-Branch.Address
-FROM
-Purchase_Ledger
-JOIN Branch ON Purchase_Ledger.Branch = Branch.id
-    order by Date
-");
-
-    $statement->execute();
-
-    $all_result = $statement->fetchAll();
-
-    $total_rows = $statement->rowCount();
-
-    if (isset($_POST['filter'])) {
-        $statement = $connect->prepare("
     SELECT
     Purchase_Ledger.id,
     Purchase_Ledger.Date,
@@ -43,18 +18,102 @@ JOIN Branch ON Purchase_Ledger.Branch = Branch.id
     FROM
     Purchase_Ledger
     JOIN Branch ON Purchase_Ledger.Branch = Branch.id
-    WHERE Date Between :startDate AND :endDate order by Date;
+        order by Date
     ");
 
-        $statement->execute(
-            array(
-                ':startDate' => trim($_POST["startDate"]),
-                ':endDate' => trim($_POST["endDate"])
-            )
-        );
-        $all_result = $statement->fetchAll();
+    $statement->execute();
 
-        $total_rows = $statement->rowCount();
+    $all_result = $statement->fetchAll();
+
+    $total_rows = $statement->rowCount();
+
+    if (isset($_POST['filter'])) {
+        if (!empty(trim($_POST["startDate"]) && trim($_POST["endDate"]) && trim($_POST["Branch_Name"]))) {
+            $statement = $connect->prepare("
+                SELECT
+                Purchase_Ledger.id,
+                Purchase_Ledger.Date,
+                Purchase_Ledger.Bill_no,
+                Purchase_Ledger.Sellers_name,
+                Purchase_Ledger.Sellers_PAN_no,
+                Purchase_Ledger.Total_Purchase_Amount,
+                Purchase_Ledger.VAT_included_purchase_amount,
+                Purchase_Ledger.VAT_included_purchase_VAT_amount,
+                Branch.Name,
+                Branch.Address
+                FROM
+                Purchase_Ledger
+                JOIN Branch ON Purchase_Ledger.Branch = Branch.id
+                WHERE Date Between :startDate AND :endDate
+                AND Branch = :Branch order by Date;
+            ");
+
+            $statement->execute(
+                array(
+                    ':startDate' => trim($_POST["startDate"]),
+                    ':endDate' => trim($_POST["endDate"]),
+                    ':Branch' => trim($_POST["Branch_Name"])
+                )
+            );
+            $all_result = $statement->fetchAll();
+
+            $total_rows = $statement->rowCount();
+        } elseif (!empty(trim($_POST["Branch_Name"]))) {
+            $statement = $connect->prepare("
+            SELECT
+            Purchase_Ledger.id,
+            Purchase_Ledger.Date,
+            Purchase_Ledger.Bill_no,
+            Purchase_Ledger.Sellers_name,
+            Purchase_Ledger.Sellers_PAN_no,
+            Purchase_Ledger.Total_Purchase_Amount,
+            Purchase_Ledger.VAT_included_purchase_amount,
+            Purchase_Ledger.VAT_included_purchase_VAT_amount,
+            Branch.Name,
+            Branch.Address
+            FROM
+            Purchase_Ledger
+            JOIN Branch ON Purchase_Ledger.Branch = Branch.id
+            WHERE Branch = :Branch order by Date;
+            ");
+
+            $statement->execute(
+                array(
+                    ':Branch' => trim($_POST["Branch_Name"])
+                )
+            );
+            $all_result = $statement->fetchAll();
+
+            $total_rows = $statement->rowCount();
+        } elseif (!empty(trim($_POST["startDate"])) && trim($_POST["endDate"])) {
+            $statement = $connect->prepare("
+            SELECT
+            Purchase_Ledger.id,
+            Purchase_Ledger.Date,
+            Purchase_Ledger.Bill_no,
+            Purchase_Ledger.Sellers_name,
+            Purchase_Ledger.Sellers_PAN_no,
+            Purchase_Ledger.Total_Purchase_Amount,
+            Purchase_Ledger.VAT_included_purchase_amount,
+            Purchase_Ledger.VAT_included_purchase_VAT_amount,
+            Branch.Name,
+            Branch.Address
+            FROM
+            Purchase_Ledger
+            JOIN Branch ON Purchase_Ledger.Branch = Branch.id
+            WHERE Date Between :startDate AND :endDate order by Date;
+            ");
+
+            $statement->execute(
+                array(
+                    ':startDate' => trim($_POST["startDate"]),
+                    ':endDate' => trim($_POST["endDate"])
+                )
+            );
+            $all_result = $statement->fetchAll();
+
+            $total_rows = $statement->rowCount();
+        }
     }
 
     $name = $_SESSION['name'];
@@ -703,19 +762,49 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         Start Date:
                                     </td>
                                     <td>
-                                        <input type="date" name="startDate" id="StartDate" class="form-control" required>
+                                        <input type="date" name="startDate" id="StartDate" class="form-control">
                                     </td>
                                     <td>
                                         End Date:
                                     </td>
                                     <td>
-                                        <input type="date" name="endDate" id="EndDate" class="form-control" required>
+                                        <input type="date" name="endDate" id="EndDate" class="form-control">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <?php
+                                    $statement = $connect->prepare("
+                                        SELECT * FROM Branch
+                                    ");
+
+                                    $statement->execute();
+
+                                    $all_result_branch = $statement->fetchAll();
+
+                                    $total_rows_branch = $statement->rowCount();
+                                    ?>
+                                    <td>
+                                        <label for="AccountName">Branch Name</label>
+                                    </td>
+                                    <td>
+                                        <select name="Branch_Name" id="Branch_Name" class="form-control">
+                                            <option value="">Select a branch</option>
+                                            <?php
+                                            if ($total_rows_branch > 0) {
+                                                foreach ($all_result_branch as $row) {
+                                                    echo '
+                                            <option value="' . $row["id"] . '" class="form-control">' . $row["Name"] . ' (' . $row["Address"] . ')</option>
+                                            ';
+                                                }
+                                            }
+                                            ?>
+                                        </select>
                                     </td>
                                     <td>
                                         <input type="submit" name="filter" id="filter" value="Filter" class="btn btn-primary filter">
                                     </td>
                                     <td>
-                                        <input type="button" name="print" id="print" value="Print" class="btn btn-danger print">
+                                        <input type="button" name="print" id="print" value="Print" class="btn btn-danger print" onclick="myFunction()">
                                     </td>
                                 </tr>
                             </table>
@@ -730,20 +819,40 @@ WHERE Purchase_Ledger.Branch = :Branch
                             });
                         </script>
                         <div id="Ratelist" class="table-responsive">
-                            <div id="Ratelist" class="table-responsive">
-                                <?php
-                                $statement = $connect->prepare("
+                            <?php
+                            $statement = $connect->prepare("
                             SELECT * FROM Branch  
                                 WHERE id = :id
                                 LIMIT 1
                             ");
-                                $statement->execute(
-                                    array(
-                                        ':id'       =>  $_SESSION["Linked_branch"]
-                                    )
-                                );
-                                $result = $statement->fetch();
-                                ?>
+                            $statement->execute(
+                                array(
+                                    ':id'       =>  $_SESSION["Linked_branch"]
+                                )
+                            );
+                            $result = $statement->fetch();
+                            ?>
+                            <center>
+                                <table>
+                                    <tr>
+                                        <th>
+                                            <span>
+                                                PAN No:
+                                            </span>
+                                        </th>
+                                        <th>
+                                            <input type="text" name="PAN" id="PAN" readonly class="form-control" style="text-align:center; color:blue;" value="<?php echo $result["PAN"]; ?>">
+                                        </th>
+                                    </tr>
+                                </table>
+                                <br>
+                            </center>
+                            <div id="Part1" style="display: none">
+                                <div class="page-header clearfix">
+                                    <center>
+                                        <h2 class="pull-left">Purchase Register (खरिद खाता)</h2>
+                                    </center>
+                                </div><br>
                                 <center>
                                     <table>
                                         <tr>
@@ -759,78 +868,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                     </table>
                                     <br>
                                 </center>
-                                <div id="Part1" style="display: none">
-                                    <div class="page-header clearfix">
-                                        <center>
-                                            <h2 class="pull-left">Purchase Register (खरिद खाता)</h2>
-                                        </center>
-                                    </div><br>
-                                    <center>
-                                        <table>
-                                            <tr>
-                                                <th>
-                                                    <span>
-                                                        PAN No:
-                                                    </span>
-                                                </th>
-                                                <th>
-                                                    <input type="text" name="PAN" id="PAN" readonly class="form-control" style="text-align:center; color:blue;" value="<?php echo $result["PAN"]; ?>">
-                                                </th>
-                                            </tr>
-                                        </table>
-                                        <br>
-                                    </center>
-                                    <table class='table table-bordered table-striped'>
-                                        <thead>
-                                            <tr style="text-align:center;">
-                                                <td>P_ID</td>
-                                                <td style="white-space: nowrap;">Date</td>
-                                                <td>Invoice No</td>
-                                                <td>Seller's Name</td>
-                                                <td>Seller's PAN no</td>
-                                                <td>Total Purchase Amount</td>
-                                                <td>VAT Included Purchase Amount</td>
-                                                <td>VAT Amount</td>
-                                                <td>Branch</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            if ($total_rows > 0) {
-                                                $sum = 0;
-                                                $sum1 = 0;
-                                                $sum2 = 0;
-                                                foreach ($all_result as $row) {
-                                                    $sum = $sum + $row["Total_Purchase_Amount"];
-                                                    $sum1 = $sum1 + $row["VAT_included_purchase_amount"];
-                                                    $sum2 = $sum2 + $row["VAT_included_purchase_VAT_amount"];
-                                                    echo '
-                                            <tr>
-                                                <td>' . $row["id"] . '</td>
-                                                <td style="white-space: nowrap;">' . $row['Date'] . '</td>
-                                                <td>' . $row['Bill_no'] . '</td>
-                                                <td>' . $row['Sellers_name'] . '</td>
-                                                <td>' . $row['Sellers_PAN_no'] . '</td>
-                                                <td>' . $row['Total_Purchase_Amount'] . '</td>
-                                                <td>' . $row['VAT_included_purchase_amount'] . '</td>
-                                                <td>' . $row['VAT_included_purchase_VAT_amount'] . '</td>
-                                                <td>' . $row['Name'] .' ('. $row['Address']. ') </td>
-                                            </tr>
-                                            ';
-                                                }
-                                            }
-                                            ?>
-                                        </tbody>
-                                        <tr>
-                                            <td colspan="5"><b>Grand Total Amount:</b></td>
-                                            <td colspan="1"><b><?php echo $sum; ?></b></td>
-                                            <td colspan="1"><b><?php echo $sum1; ?></b></td>
-                                            <td colspan="1"><b><?php echo $sum2; ?></b></td>
-                                            <td colspan="3"></td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <table id="data-table" class='table table-bordered table-striped'>
+                                <table class='table table-bordered table-striped'>
                                     <thead>
                                         <tr style="text-align:center;">
                                             <td>P_ID</td>
@@ -842,8 +880,6 @@ WHERE Purchase_Ledger.Branch = :Branch
                                             <td>VAT Included Purchase Amount</td>
                                             <td>VAT Amount</td>
                                             <td>Branch</td>
-                                            <td>Edit</td>
-                                            <td>Delete</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -866,9 +902,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                                 <td>' . $row['Total_Purchase_Amount'] . '</td>
                                                 <td>' . $row['VAT_included_purchase_amount'] . '</td>
                                                 <td>' . $row['VAT_included_purchase_VAT_amount'] . '</td>
-                                                <td>' . $row['Name'] .' ('. $row['Address']. ') </td>
-                                                <td><a href="purchase.php?update=1&id=' . $row["id"] . '">Edit</a></td>
-                                                <td><a href="purchase.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
+                                                <td style="white-space: nowrap;">' . $row['Name'] . '<br> (' . $row['Address'] . ') </td>
                                             </tr>
                                             ';
                                             }
@@ -884,12 +918,66 @@ WHERE Purchase_Ledger.Branch = :Branch
                                     </tr>
                                 </table>
                             </div>
-                        <?php } ?>
+                            <table id="data-table" class='table table-bordered table-striped'>
+                                <thead>
+                                    <tr style="text-align:center;">
+                                        <td>P_ID</td>
+                                        <td style="white-space: nowrap;">Date</td>
+                                        <td>Invoice No</td>
+                                        <td>Seller's Name</td>
+                                        <td>Seller's PAN no</td>
+                                        <td>Total Purchase Amount</td>
+                                        <td>VAT Included Purchase Amount</td>
+                                        <td>VAT Amount</td>
+                                        <td>Branch</td>
+                                        <td>Edit</td>
+                                        <td>Delete</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    if ($total_rows > 0) {
+                                        $sum = 0;
+                                        $sum1 = 0;
+                                        $sum2 = 0;
+                                        foreach ($all_result as $row) {
+                                            $sum = $sum + $row["Total_Purchase_Amount"];
+                                            $sum1 = $sum1 + $row["VAT_included_purchase_amount"];
+                                            $sum2 = $sum2 + $row["VAT_included_purchase_VAT_amount"];
+                                            echo '
+                                            <tr>
+                                                <td>' . $row["id"] . '</td>
+                                                <td style="white-space: nowrap;">' . $row['Date'] . '</td>
+                                                <td>' . $row['Bill_no'] . '</td>
+                                                <td>' . $row['Sellers_name'] . '</td>
+                                                <td>' . $row['Sellers_PAN_no'] . '</td>
+                                                <td>' . $row['Total_Purchase_Amount'] . '</td>
+                                                <td>' . $row['VAT_included_purchase_amount'] . '</td>
+                                                <td>' . $row['VAT_included_purchase_VAT_amount'] . '</td>
+                                                <td style="white-space: nowrap;">' . $row['Name'] . '<br> (' . $row['Address'] . ') </td>
+                                                <td><a href="purchase.php?update=1&id=' . $row["id"] . '">Edit</a></td>
+                                                <td><a href="purchase.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
+                                            </tr>
+                                            ';
+                                        }
+                                    }
+                                    ?>
+                                </tbody>
+                                <tr>
+                                    <td colspan="5"><b>Grand Total Amount:</b></td>
+                                    <td colspan="1"><b><?php echo $sum; ?></b></td>
+                                    <td colspan="1"><b><?php echo $sum1; ?></b></td>
+                                    <td colspan="1"><b><?php echo $sum2; ?></b></td>
+                                    <td colspan="3"></td>
+                                </tr>
+                            </table>
                         </div>
+                    <?php } ?>
                 </div>
-                <?php include("includes/footer.php"); ?>
             </div>
+            <?php include("includes/footer.php"); ?>
         </div>
+    </div>
 </body>
 
 </html>

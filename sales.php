@@ -28,33 +28,92 @@ if ($_SESSION["User_type"] == "Admin") {
     $total_rows = $statement->rowCount();
 
     if (isset($_POST['filter'])) {
-        $statement = $connect->prepare("
-    SELECT
-    Sales_Ledger.id,
-    Sales_Ledger.Date,
-    Sales_Ledger.Bill_no,
-    Sales_Ledger.Customers_name,
-    Sales_Ledger.Customers_PAN_no,
-    Sales_Ledger.Total_sales_amount,
-    Sales_Ledger.VAT_included_sales_amount,
-    Sales_Ledger.VAT_included_sales_VAT,
-    Branch.Name,
-    Branch.Address
-    FROM
-    Sales_Ledger
-    JOIN Branch ON Sales_Ledger.Branch = Branch.id
-    WHERE Date Between :startDate AND :endDate order by Date;
-    ");
+        if (!empty(trim($_POST["startDate"]) && trim($_POST["endDate"]) && trim($_POST["Branch_Name"]))) {
+            $statement = $connect->prepare("
+            SELECT
+            Sales_Ledger.id,
+            Sales_Ledger.Date,
+            Sales_Ledger.Bill_no,
+            Sales_Ledger.Customers_name,
+            Sales_Ledger.Customers_PAN_no,
+            Sales_Ledger.Total_sales_amount,
+            Sales_Ledger.VAT_included_sales_amount,
+            Sales_Ledger.VAT_included_sales_VAT,
+            Branch.Name,
+            Branch.Address
+            FROM
+            Sales_Ledger
+            JOIN Branch ON Sales_Ledger.Branch = Branch.id
+            WHERE Date Between :startDate AND :endDate
+            AND Branch = :Branch order by Date;
+            ");
 
-        $statement->execute(
-            array(
-                ':startDate' => trim($_POST["startDate"]),
-                ':endDate' => trim($_POST["endDate"])
-            )
-        );
-        $all_result = $statement->fetchAll();
+            $statement->execute(
+                array(
+                    ':startDate' => trim($_POST["startDate"]),
+                    ':endDate' => trim($_POST["endDate"]),
+                    ':Branch' => trim($_POST["Branch_Name"])
+                )
+            );
+            $all_result = $statement->fetchAll();
 
-        $total_rows = $statement->rowCount();
+            $total_rows = $statement->rowCount();
+        } elseif (!empty(trim($_POST["Branch_Name"]))) {
+            $statement = $connect->prepare("
+            SELECT
+            Sales_Ledger.id,
+            Sales_Ledger.Date,
+            Sales_Ledger.Bill_no,
+            Sales_Ledger.Customers_name,
+            Sales_Ledger.Customers_PAN_no,
+            Sales_Ledger.Total_sales_amount,
+            Sales_Ledger.VAT_included_sales_amount,
+            Sales_Ledger.VAT_included_sales_VAT,
+            Branch.Name,
+            Branch.Address
+            FROM
+            Sales_Ledger
+            JOIN Branch ON Sales_Ledger.Branch = Branch.id
+            WHERE Branch = :Branch order by Date;
+            ");
+
+            $statement->execute(
+                array(
+                    ':Branch' => trim($_POST["Branch_Name"])
+                )
+            );
+            $all_result = $statement->fetchAll();
+
+            $total_rows = $statement->rowCount();
+        } elseif (!empty(trim($_POST["startDate"])) && trim($_POST["endDate"])) {
+            $statement = $connect->prepare("
+            SELECT
+            Sales_Ledger.id,
+            Sales_Ledger.Date,
+            Sales_Ledger.Bill_no,
+            Sales_Ledger.Customers_name,
+            Sales_Ledger.Customers_PAN_no,
+            Sales_Ledger.Total_sales_amount,
+            Sales_Ledger.VAT_included_sales_amount,
+            Sales_Ledger.VAT_included_sales_VAT,
+            Branch.Name,
+            Branch.Address
+            FROM
+            Sales_Ledger
+            JOIN Branch ON Sales_Ledger.Branch = Branch.id
+            WHERE Date Between :startDate AND :endDate order by Date;
+            ");
+
+            $statement->execute(
+                array(
+                    ':startDate' => trim($_POST["startDate"]),
+                    ':endDate' => trim($_POST["endDate"])
+                )
+            );
+            $all_result = $statement->fetchAll();
+
+            $total_rows = $statement->rowCount();
+        }
     }
 
     $name = $_SESSION['name'];
@@ -708,13 +767,43 @@ if ($_SESSION["User_type"] == "Admin") {
                                         Start Date:
                                     </td>
                                     <td>
-                                        <input type="date" name="startDate" id="StartDate" class="form-control" required>
+                                        <input type="date" name="startDate" id="StartDate" class="form-control">
                                     </td>
                                     <td>
                                         End Date:
                                     </td>
                                     <td>
-                                        <input type="date" name="endDate" id="EndDate" class="form-control" required>
+                                        <input type="date" name="endDate" id="EndDate" class="form-control">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <?php
+                                    $statement = $connect->prepare("
+                                        SELECT * FROM Branch
+                                    ");
+
+                                    $statement->execute();
+
+                                    $all_result_branch = $statement->fetchAll();
+
+                                    $total_rows_branch = $statement->rowCount();
+                                    ?>
+                                    <td>
+                                        <label for="AccountName">Branch Name</label>
+                                    </td>
+                                    <td>
+                                        <select name="Branch_Name" id="Branch_Name" class="form-control">
+                                            <option value="">Select a branch</option>
+                                            <?php
+                                            if ($total_rows_branch > 0) {
+                                                foreach ($all_result_branch as $row) {
+                                                    echo '
+                                            <option value="' . $row["id"] . '" class="form-control">' . $row["Name"] . ' (' . $row["Address"] . ')</option>
+                                            ';
+                                                }
+                                            }
+                                            ?>
+                                        </select>
                                     </td>
                                     <td>
                                         <input type="submit" name="filter" id="filter" value="Filter" class="btn btn-primary filter">
@@ -765,23 +854,25 @@ if ($_SESSION["User_type"] == "Admin") {
                             </center>
                             <div id="Part1" style="display: none">
                                 <div class="page-header clearfix">
-                                    <center><h2 class="pull-left">Sales Register (बिक्री खाता)</h2></center>
-                                </div><br>
                                     <center>
-                                        <table>
-                                            <tr>
-                                                <th>
-                                                    <span>
-                                                        PAN No:
-                                                    </span>
-                                                </th>
-                                                <th>
-                                                    <input type="text" name="PAN" id="PAN" readonly class="form-control" style="text-align:center; color:blue;" value="<?php echo $result["PAN"]; ?>">
-                                                </th>
-                                            </tr>
-                                        </table>
-                                        <br>
+                                        <h2 class="pull-left">Sales Register (बिक्री खाता)</h2>
                                     </center>
+                                </div><br>
+                                <center>
+                                    <table>
+                                        <tr>
+                                            <th>
+                                                <span>
+                                                    PAN No:
+                                                </span>
+                                            </th>
+                                            <th>
+                                                <input type="text" name="PAN" id="PAN" readonly class="form-control" style="text-align:center; color:blue;" value="<?php echo $result["PAN"]; ?>">
+                                            </th>
+                                        </tr>
+                                    </table>
+                                    <br>
+                                </center>
                                 <table class='table table-bordered table-striped'>
                                     <thead>
                                         <tr style="text-align:center;">
@@ -816,7 +907,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                                 <td>' . $row['Total_sales_amount'] . '</td>
                                                 <td>' . $row['VAT_included_sales_amount'] . '</td>
                                                 <td>' . $row['VAT_included_sales_VAT'] . '</td></div>
-                                                <td>' . $row['Name'] .' ('. $row['Address']. ') </td>
+                                                <td style="white-space: nowrap;">' . $row['Name'] . '<br> (' . $row['Address'] . ') </td>
                                             </tr>
                                             ';
                                             }
@@ -868,7 +959,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                                 <td>' . $row['Total_sales_amount'] . '</td>
                                                 <td>' . $row['VAT_included_sales_amount'] . '</td>
                                                 <td>' . $row['VAT_included_sales_VAT'] . '</td></div>
-                                                <td>' . $row['Name'] .' ('. $row['Address']. ') </td>
+                                                <td style="white-space: nowrap;">' . $row['Name'] . '<br> (' . $row['Address'] . ') </td>
                                                 <td><a href="sales.php?update=1&id=' . $row["id"] . '">Edit</a></td>
                                                 <td><a href="sales.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
                                             </tr>
