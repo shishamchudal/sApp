@@ -1,9 +1,10 @@
-# Project Title
-Online Outlet Management System
+# Online Outlet Management System
+
 
 ## Getting Started
 sApp is a program for creating, storing and managing the Sales and Purchase Ledger of a company.
 
+## Description
 Short description of the files and there uses:-
 
 <----------------------Folders---------------------->
@@ -33,7 +34,7 @@ Short description of the files and there uses:-
 
 ## Authors
 
-Shisham Chudal - Lead Programmer.
+**Shisham Chudal** - Lead Programmer.
 See also the list of contributors who participated in this project.
 
 ## License
