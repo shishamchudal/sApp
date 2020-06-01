@@ -13,7 +13,8 @@ if ($_SESSION["User_type"] == "Admin") {
     Sales_Ledger.Total_sales_amount,
     Sales_Ledger.VAT_included_sales_amount,
     Sales_Ledger.VAT_included_sales_VAT,
-    Branch.Name
+    Branch.Name,
+    Branch.Address
     FROM
     Sales_Ledger
     JOIN Branch ON Sales_Ledger.Branch = Branch.id
@@ -37,7 +38,8 @@ if ($_SESSION["User_type"] == "Admin") {
     Sales_Ledger.Total_sales_amount,
     Sales_Ledger.VAT_included_sales_amount,
     Sales_Ledger.VAT_included_sales_VAT,
-    Branch.Name
+    Branch.Name,
+    Branch.Address
     FROM
     Sales_Ledger
     JOIN Branch ON Sales_Ledger.Branch = Branch.id
@@ -164,7 +166,8 @@ if ($_SESSION["User_type"] == "Admin") {
     Sales_Ledger.Total_sales_amount,
     Sales_Ledger.VAT_included_sales_amount,
     Sales_Ledger.VAT_included_sales_VAT,
-    Branch.Name
+    Branch.Name,
+    Branch.Address
     FROM
     Sales_Ledger
     JOIN Branch ON Sales_Ledger.Branch = Branch.id
@@ -193,7 +196,8 @@ if ($_SESSION["User_type"] == "Admin") {
     Sales_Ledger.Total_sales_amount,
     Sales_Ledger.VAT_included_sales_amount,
     Sales_Ledger.VAT_included_sales_VAT,
-    Branch.Name
+    Branch.Name,
+    Branch.Address
     FROM
     Sales_Ledger
     JOIN Branch ON Sales_Ledger.Branch = Branch.id
@@ -812,7 +816,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                                 <td>' . $row['Total_sales_amount'] . '</td>
                                                 <td>' . $row['VAT_included_sales_amount'] . '</td>
                                                 <td>' . $row['VAT_included_sales_VAT'] . '</td></div>
-                                                <td>' . $row['Name'] . '</td>
+                                                <td>' . $row['Name'] .' ('. $row['Address']. ') </td>
                                             </tr>
                                             ';
                                             }
@@ -864,7 +868,7 @@ if ($_SESSION["User_type"] == "Admin") {
                                                 <td>' . $row['Total_sales_amount'] . '</td>
                                                 <td>' . $row['VAT_included_sales_amount'] . '</td>
                                                 <td>' . $row['VAT_included_sales_VAT'] . '</td></div>
-                                                <td>' . $row['Name'] . '</td>
+                                                <td>' . $row['Name'] .' ('. $row['Address']. ') </td>
                                                 <td><a href="sales.php?update=1&id=' . $row["id"] . '">Edit</a></td>
                                                 <td><a href="sales.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
                                             </tr>

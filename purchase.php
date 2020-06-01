@@ -13,7 +13,8 @@ Purchase_Ledger.Sellers_PAN_no,
 Purchase_Ledger.Total_Purchase_Amount,
 Purchase_Ledger.VAT_included_purchase_amount,
 Purchase_Ledger.VAT_included_purchase_VAT_amount,
-Branch.Name
+Branch.Name,
+Branch.Address
 FROM
 Purchase_Ledger
 JOIN Branch ON Purchase_Ledger.Branch = Branch.id
@@ -37,7 +38,8 @@ JOIN Branch ON Purchase_Ledger.Branch = Branch.id
     Purchase_Ledger.Total_Purchase_Amount,
     Purchase_Ledger.VAT_included_purchase_amount,
     Purchase_Ledger.VAT_included_purchase_VAT_amount,
-    Branch.Name
+    Branch.Name,
+    Branch.Address
     FROM
     Purchase_Ledger
     JOIN Branch ON Purchase_Ledger.Branch = Branch.id
@@ -164,7 +166,8 @@ Purchase_Ledger.Sellers_PAN_no,
 Purchase_Ledger.Total_Purchase_Amount,
 Purchase_Ledger.VAT_included_purchase_amount,
 Purchase_Ledger.VAT_included_purchase_VAT_amount,
-Branch.Name
+Branch.Name,
+Branch.Address
 FROM
 Purchase_Ledger
 JOIN Branch ON Purchase_Ledger.Branch = Branch.id
@@ -193,7 +196,8 @@ WHERE Purchase_Ledger.Branch = :Branch
     Purchase_Ledger.Total_Purchase_Amount,
     Purchase_Ledger.VAT_included_purchase_amount,
     Purchase_Ledger.VAT_included_purchase_VAT_amount,
-    Branch.Name
+    Branch.Name,
+    Branch.Address
     FROM
     Purchase_Ledger
     JOIN Branch ON Purchase_Ledger.Branch = Branch.id
@@ -810,7 +814,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                                 <td>' . $row['Total_Purchase_Amount'] . '</td>
                                                 <td>' . $row['VAT_included_purchase_amount'] . '</td>
                                                 <td>' . $row['VAT_included_purchase_VAT_amount'] . '</td>
-                                                <td>' . $row['Name'] . '</td>
+                                                <td>' . $row['Name'] .' ('. $row['Address']. ') </td>
                                             </tr>
                                             ';
                                                 }
@@ -862,7 +866,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                                 <td>' . $row['Total_Purchase_Amount'] . '</td>
                                                 <td>' . $row['VAT_included_purchase_amount'] . '</td>
                                                 <td>' . $row['VAT_included_purchase_VAT_amount'] . '</td>
-                                                <td>' . $row['Name'] . '</td>
+                                                <td>' . $row['Name'] .' ('. $row['Address']. ') </td>
                                                 <td><a href="purchase.php?update=1&id=' . $row["id"] . '">Edit</a></td>
                                                 <td><a href="purchase.php?delete=1&id=' . $row["id"] . '">Delete</a></td>
                                             </tr>
