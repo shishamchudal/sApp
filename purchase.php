@@ -431,7 +431,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         <label for="name">Date</label>
                                     </th>
                                     <td>
-                                        <input type="date" name="Date" id="Adddate" required class="form-control date">
+                                        <input type="date" name="Date" id="Adddate" required class="form-control date" tabindex="1">
                                     </td>
                                 </tr>
                                 <tr>
@@ -439,7 +439,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         <label for="panno">Invoice No</label>
                                     </th>
                                     <td>
-                                        <input type="number" name="Bill_No" id="billno" class="form-control" required>
+                                        <input type="number" name="Bill_No" id="billno" class="form-control" required tabindex="2">
                                     </td>
                                 </tr>
                                 <tr>
@@ -447,7 +447,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         <label for="phone">Seller's Name</label>
                                     </th>
                                     <td>
-                                        <input type="text" name="Sellers_name" id="Customersname" required class="form-control">
+                                        <input type="text" name="Sellers_name" id="Customersname" required class="form-control" tabindex="3">
                                     </td>
                                 </tr>
                                 <tr>
@@ -455,7 +455,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         <label for="phone">Seller's PAN No</label>
                                     </th>
                                     <td>
-                                        <input type="number" name="Sellers_PAN_no" id="Customerspanno" required class="form-control">
+                                        <input type="number" name="Sellers_PAN_no" id="Customerspanno" required class="form-control" tabindex="4">
                                     </td>
                                 </tr>
                                 <tr>
@@ -471,7 +471,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         <label for="phone">Purchase Amount</label>
                                     </th>
                                     <td>
-                                        <input type="number" name="VAT_included_purchase_amount" id="purchase_amount" required class="form-control purchase_amount">
+                                        <input type="number" name="VAT_included_purchase_amount" id="purchase_amount" required class="form-control purchase_amount" tabindex="5">
                                     </td>
                                 </tr>
                                 <tr>
@@ -487,7 +487,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                         <label for="phone">Branch</label>
                                     </th>
                                     <td>
-                                        <select name="Branch" id="Branch" required class="form-control Branch">
+                                        <select name="Branch" id="Branch" required class="form-control Branch" tabindex="6">
                                             <option>Select Branch</option>
                                             <?php echo LoadBranch($connect); ?>
                                         </select>
@@ -573,7 +573,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                                 <label for="name">Date</label>
                                             </th>
                                             <td>
-                                                <input type="date" name="Date" id="date" required class="form-control date" value="<?php echo $row["Date"]; ?>">
+                                                <input type="date" name="Date" id="date" required class="form-control date" value="<?php echo $row["Date"]; ?>" tabindex="1">
                                             </td>
                                         </tr>
                                         <tr>
@@ -581,7 +581,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                                 <label for="panno">Invoice No</label>
                                             </th>
                                             <td>
-                                                <input type="number" name="Bill_No" id="billno" class="form-control" value="<?php echo $row["Bill_No"]; ?>" required>
+                                                <input type="number" name="Bill_No" id="billno" class="form-control" value="<?php echo $row["Bill_No"]; ?>" required tabindex="2">
                                             </td>
                                         </tr>
                                         <tr>
@@ -589,7 +589,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                                 <label for="phone">Seller's Name</label>
                                             </th>
                                             <td>
-                                                <input type="text" name="Sellers_name" id="Customersname" value="<?php echo $row["Sellers_name"]; ?>" required class="form-control">
+                                                <input type="text" name="Sellers_name" id="Customersname" value="<?php echo $row["Sellers_name"]; ?>" required class="form-control" tabindex="3">
                                             </td>
                                         </tr>
                                         <tr>
@@ -597,7 +597,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                                 <label for="phone">Seller's PAN No</label>
                                             </th>
                                             <td>
-                                                <input type="number" name="Sellers_PAN_no" id="Customerspanno" value="<?php echo $row["Sellers_PAN_no"]; ?>" required class="form-control">
+                                                <input type="number" name="Sellers_PAN_no" id="Customerspanno" value="<?php echo $row["Sellers_PAN_no"]; ?>" required class="form-control" tabindex="4">
                                             </td>
                                         </tr>
                                         <tr>
@@ -613,7 +613,7 @@ WHERE Purchase_Ledger.Branch = :Branch
                                                 <label for="phone">Purchase Amount</label>
                                             </th>
                                             <td>
-                                                <input type="number" name="VAT_included_purchase_amount" id="purchase_amount" value="<?php echo $row["VAT_included_purchase_amount"]; ?>" required class="form-control purchase_amount">
+                                                <input type="number" name="VAT_included_purchase_amount" id="purchase_amount" value="<?php echo $row["VAT_included_purchase_amount"]; ?>" required class="form-control purchase_amount" tabindex="5">
                                             </td>
                                         </tr>
                                         <tr>
