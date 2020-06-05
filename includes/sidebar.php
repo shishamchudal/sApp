@@ -29,6 +29,11 @@
           <i class="fas fa-fw fa-table"></i>
           <span>Purchase</span></a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="chat.php">
+          <i class="fas fa-comments"></i>
+          <span>Chat</span></a>
+      </li>
 <?php
 include_once 'header.php';
 if ($_SESSION["User_type"] == "Admin") {
