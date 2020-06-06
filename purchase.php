@@ -773,33 +773,38 @@ WHERE Purchase_Ledger.Branch = :Branch
                                 </tr>
                                 <tr>
                                     <?php
-                                    $statement = $connect->prepare("
+                                    include_once 'header.php';
+                                    if ($_SESSION["User_type"] == "Admin") {
+                                        $statement = $connect->prepare("
                                         SELECT * FROM Branch
                                     ");
 
-                                    $statement->execute();
+                                        $statement->execute();
 
-                                    $all_result_branch = $statement->fetchAll();
+                                        $all_result_branch = $statement->fetchAll();
 
-                                    $total_rows_branch = $statement->rowCount();
+                                        $total_rows_branch = $statement->rowCount();
                                     ?>
-                                    <td>
-                                        <label for="AccountName">Branch Name</label>
-                                    </td>
-                                    <td>
-                                        <select name="Branch_Name" id="Branch_Name" class="form-control">
-                                            <option value="">Select a branch</option>
-                                            <?php
-                                            if ($total_rows_branch > 0) {
-                                                foreach ($all_result_branch as $row) {
-                                                    echo '
+                                        <td>
+                                            <label for="AccountName">Branch Name</label>
+                                        </td>
+                                        <td>
+                                            <select name="Branch_Name" id="Branch_Name" class="form-control">
+                                                <option value="">Select a branch</option>
+                                                <?php
+                                                if ($total_rows_branch > 0) {
+                                                    foreach ($all_result_branch as $row) {
+                                                        echo '
                                             <option value="' . $row["id"] . '" class="form-control">' . $row["Name"] . ' (' . $row["Address"] . ')</option>
                                             ';
+                                                    }
                                                 }
-                                            }
-                                            ?>
-                                        </select>
-                                    </td>
+                                                ?>
+                                            </select>
+                                        </td>
+                                    <?php
+                                    }
+                                    ?>
                                     <td>
                                         <input type="submit" name="filter" id="filter" value="Filter" class="btn btn-primary filter">
                                     </td>
