@@ -28,6 +28,27 @@ if (isset($_POST["Send"])) {
 		echo 'Caught exception: ',  $e->getMessage(), "\n";
 	}
 }
+if (isset($_GET["delete"]) && $_GET["delete"] == 1) {
+	if ($_SESSION["User_type"] == "Admin") {
+		$statement = $connect->prepare(
+			"DELETE FROM chat"
+		);
+		$statement->execute();
+		echo '
+	<script>
+		alert("Message deleted sucessfully!");
+			window.top.location = "chat.php";
+	</script>
+	';
+	} else {
+?>
+		<script>
+			alert("You are not allowed to delete 😡!");
+			window.top.location = "chat.php";
+		</script>
+<?php
+	}
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,6 +86,20 @@ if (isset($_POST["Send"])) {
 											</div>
 											<div class="data">
 												<h5><a href="#">Group Chat</a></h5>
+											</div>
+											<div class="dropdown">
+												<button class="btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="material-icons md-30">more_vert</i></button>
+												<div class="dropdown-menu dropdown-menu-right">
+													<a href="profile.php"><button class="dropdown-item info"><i class="material-icons">info</i>Account Info</button></a>
+													<?php
+													include_once 'header.php';
+													if ($_SESSION["User_type"] == "Admin") {
+													?>
+														<a href="chat.php?delete=1"><button class="dropdown-item delete"><i class="material-icons">delete</i>Delete History</button></a>
+													<?php
+													}
+													?>
+												</div>
 											</div>
 										</div>
 									</div>
